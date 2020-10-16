@@ -191,6 +191,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         et.setAdresse(StaticData.adresse);
         et.setBackground("bg_1.png");
         et.setCurrency("HTG");
+        et.setFrag_name("Ctrl");
         eDao.save(et);
     	}
     
