@@ -47,7 +47,7 @@ public class StaticData {
 	public static HashMap<String,List<Niveau>> niveau = new HashMap<>();
 	// ETAB 
 	public static String code_etab   ="E1";
-	public static String name_etab   = "College Frere StCyr";
+	public static String name_etab   = "College Pledika";
 	public static String cat_etab    = "Ecole Classique";
 	public static String annee_fond  = "2009";
 	public static String email_etab  = "***@***.***";
@@ -55,7 +55,7 @@ public class StaticData {
 	public static String phone_b     = "";
 	public static String phone_c     = "";
 	public static String description ="";
-    public static String website     ="www.***.***";
+    public static String website     ="www.pledika.com";
     public static String adresse     ="13# Delmas 83";
     
     // ng serve --host 172.20.10.2 --port 4201
