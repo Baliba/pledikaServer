@@ -941,6 +941,9 @@ public class IndexController {
 	      }
 	   }
 	   
+
+	   
+	   
 	   @RequestMapping(value = "/api/getPromoByAF")
 	   public ResponseEntity<?> getPromoByAF(Authentication auth) {
 		   UserEntity  utt = getUser(auth);

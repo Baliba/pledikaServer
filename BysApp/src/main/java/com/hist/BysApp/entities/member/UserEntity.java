@@ -162,6 +162,13 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     
     @Column(columnDefinition=" Integer default 1234 ")
     private int  pin;
+   
+    
+    @Column(nullable = true, unique = true, updatable=true, columnDefinition=" varchar default '' ")
+    private String  identifiant;
+    
+    @Column(nullable = true, unique = true, updatable=true, columnDefinition=" varchar default '' ")
+    private String  matricule;
     
     @Column(nullable = true, updatable=true)
     private String year_over;

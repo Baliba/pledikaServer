@@ -18,10 +18,10 @@ public class StaticData {
 	public static  List<String> TYPE_PAYROLL = Arrays.asList("CASH","CHEQUE","VIREMENT");
 	
 	// USER-INFO
-	public static String fname = "Bigvai Asgard";
-	public static String lname = "Marcella";
+	public static String fname = "Master";
+	public static String lname = "Pledika";
 	public static String pass  = "Loppe@2017;";
-	public static String email = "bmarcella91@gmail.com";
+	public static String email = "master@pledika.com";
 	
 	// DOMAINE 
 		public static  List<DocConfig> docConfig = Arrays.asList(

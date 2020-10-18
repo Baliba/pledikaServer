@@ -98,16 +98,16 @@ public class Etablissement extends cObj  implements Serializable {
     String mission, vision, valeur;
     private int nprog, ncours, nmat, ncmat;
     
-    @Column(nullable = false, columnDefinition=" integer default 4 ")
+    @Column(nullable = true, columnDefinition=" integer default 4 ")
     private int nbre_ctrl;
     
-    @Column(nullable = false, columnDefinition=" varchar default 'Ctrl' ")
+    @Column(nullable = true, columnDefinition=" varchar default 'Ctrl' ")
     private String frag_name;
     
     @Column(columnDefinition=" integer default 1 ")
     private int type_reprise;
     
-    @Column(nullable = false, columnDefinition=" integer default 1 " )
+    @Column(nullable = true, columnDefinition=" integer default 1 " )
     private int reprise;
     
     private String fail_msg;

@@ -377,7 +377,7 @@ public class BulletinController {
         }
         
         @RequestMapping(value = "/api/getPalmares/{id}")
-  		public ResponseEntity<?> getCaisse(Authentication auth, @PathVariable("id") Long id) {
+  		public ResponseEntity<?> getPalmares(Authentication auth, @PathVariable("id") Long id) {
         	    UserEntity ut = getUser(auth);
         	    Palmares pal = new Palmares();
         	    List<Cours> cours = fcDao.getCoursByFrag(id);
@@ -391,6 +391,28 @@ public class BulletinController {
         	    	}
         	      ets.get(i).setResults(results);
         	      ets.get(i).setMresults(rDao.getResults(ets.get(i).getId(),id));
+        	    }
+	
+
+        	    pal.setCours(cours);
+        	    pal.setEtudiants(ets);
+    			return ResponseEntity.ok(new JwtResponse<Palmares>(false,pal, ""));
+        }
+        
+        @RequestMapping(value = "/api/getPalmaresV/{id}")
+  		public ResponseEntity<?> getPalmaresv(Authentication auth, @PathVariable("id") Long id) {
+        	    UserEntity ut = getUser(auth);
+        	    Palmares pal = new Palmares();
+        	    List<Cours> cours = fcDao.getCoursByFrag(id);
+        	    List<Etudiant> ets = fpDao.getEtudiants(id);
+     
+        	   for(int i = 0; i<ets.size(); i++) { 
+        	    	List<MResults> results  = new ArrayList<MResults>();
+        	    	for(Cours c : cours) {
+        	    	   MResults mr = new MResults(c.getId(),c.getName(),0);	  
+        	    	   results.add(mr);
+        	    	}
+        	      ets.get(i).setResults(results);
         	    }
 	
 
