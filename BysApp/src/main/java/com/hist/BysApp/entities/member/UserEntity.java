@@ -175,7 +175,9 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     
     @Column(nullable = true, updatable=true)
     private String current_promo;
-     
+    
+    @Column(nullable = true, updatable=true)
+    Long id_img;
     
     private int granted = 0;
     

@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hist.BysApp.Helper.RoleName;
 import com.hist.BysApp.Request.CPassRequest;
+import com.hist.BysApp.Request.FileNameReq;
 import com.hist.BysApp.Request.ParcoursRequest;
 import com.hist.BysApp.Request.PayReq;
 import com.hist.BysApp.Request.RegisterRequest;
@@ -57,6 +60,7 @@ import com.hist.BysApp.Response.ResultRespose;
 import com.hist.BysApp.dao.*;
 import com.hist.BysApp.entities.Location.Ville;
 import com.hist.BysApp.entities.config.Etablissement;
+import com.hist.BysApp.entities.config.FileDB;
 import com.hist.BysApp.entities.grade.Document;
 import com.hist.BysApp.entities.grade.Domaine;
 import com.hist.BysApp.entities.grade.Niveau;
@@ -160,15 +164,16 @@ public class AppController {
 	@Autowired
 	PFouDao pfouDao;
 	
-	public void setImg(Long id, String name) {
-		Optional<UserEntity> user = u.findById(id);
-		user.get().setAvatar(name);
-		UserEntity u = UserDetails.getUserInfo(user.get().getUsername());
-		this.u.save(u);
+	public void setImg(String id, String name, Long idi) {
+		UserEntity user = u.findbyCode(id);
+		user.setAvatar(name);
+		user.setId_img(idi);
+		this.u.save(user);
 	}
-	public void setImgEtab(String code, String name) {
+	public void setImgEtab(String code, String name, Long id) {
 		Etablissement etab = etabDao.findByCode(code);
 		etab.setLogo(name);
+		etab.setId_img(id);
 		etabDao.save(etab);
 	}
 
@@ -214,41 +219,57 @@ public class AppController {
 	private FileStorageService fileStorageService;
 
 	@RequestMapping(value = "/api/uploadStudentImg", method = RequestMethod.POST)
-	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id)
+	public ResponseEntity<?> upload1(@RequestParam("file") MultipartFile file, @RequestParam("id_img") Long id_img, @RequestParam("id") String id)
 			throws IOException {
-
-		String fileName = fileStorageService.storeFile(file);
-		String message = fileName;
-		if (fileName != "") {
-			this.setImg(id, fileName);
-			return ResponseEntity.ok(new JwtResponse<String>(false, message, message));
-		}
-		return ResponseEntity.ok(new JwtResponse<String>(true, message, message));
+			
+			
+			FileDB img;
+	        if (id_img==0) {
+			  img = fileStorageService.store(file,id,2);
+	        }else {
+	          img = fileStorageService.updateImg(file,id_img);
+	        }
+			String fileName = img.getName();
+			if (fileName != "") {
+				 this.setImg(id, fileName,img.getId());
+			     List<String> rep = Arrays.asList(fileName,img.getId().toString());
+				return ResponseEntity.ok(new JwtResponse<List<String>>(false,rep, fileName));
+			}
+			return ResponseEntity.ok(new JwtResponse<String>(true, fileName,"ERREUR SERVEUR"));
+		
 	}
 	
 	@RequestMapping(value = "/api/uploadEtabLogo", method = RequestMethod.POST)
-	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("code") String id)
+	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file,@RequestParam("id_img") Long id_img, @RequestParam("code") String id)
 			throws IOException {
-
-		String fileName = fileStorageService.storeFile(file);
-		String message = fileName;
+		FileDB img;
+        if (id_img==0) {
+		  img = fileStorageService.store(file,id,1);
+        }else {
+          img = fileStorageService.updateImg(file,id_img);
+        }
+		String fileName = img.getName();
 		if (fileName != "") {
-			this.setImgEtab(id, fileName);
-			return ResponseEntity.ok(new JwtResponse<String>(false, message, message));
+			this.setImgEtab(id, fileName, img.getId());
+		     List<String> rep = Arrays.asList(fileName,img.getId().toString());
+			return ResponseEntity.ok(new JwtResponse<List<String>>(false,rep, fileName));
 		}
-		return ResponseEntity.ok(new JwtResponse<String>(true, message, message));
+		return ResponseEntity.ok(new JwtResponse<String>(true, fileName,"ERREUR SERVEUR"));
 	}
+	
+	  @RequestMapping(value = "/api/getFiles/{id}", method = RequestMethod.GET)
+	  public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
+	    FileDB fileDB = fileStorageService.getFile(id);
+	 //  return ResponseEntity.ok(new JwtResponse<FileDB>(false,fileDB,""));
+	    return ResponseEntity.ok()
+	           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+	        .body(fileDB.getData());
+	  }
+	
 
 	private String UPLOADED_FOLDER = "assets/imgs";
 
-	private void saveUploadedFile(MultipartFile file) throws IOException {
-		if (!file.isEmpty()) {
-			byte[] bytes = file.getBytes();
-			String p = UPLOADED_FOLDER + file.getOriginalFilename();
-			Path path = Paths.get(p);
-			Files.write(path, bytes);
-		}
-	}
+	
 
 	@RequestMapping(value = "/api/etudiants", method = RequestMethod.GET)
 	public ResponseEntity<Page<UserEntity>> getAllStudents(@RequestParam(defaultValue = "0") Integer page,
