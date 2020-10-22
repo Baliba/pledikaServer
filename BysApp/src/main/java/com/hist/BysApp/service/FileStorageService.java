@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hist.BysApp.Helper.FileStorageProperties;
-import com.hist.BysApp.Helper.FtpUpload;
+
 import com.hist.BysApp.dao.FileDBRepo;
 import com.hist.BysApp.dao.UserRepository;
 import com.hist.BysApp.entities.config.FileDB;
