@@ -405,7 +405,6 @@ public class BulletinController {
         	    Palmares pal = new Palmares();
         	    List<Cours> cours = fcDao.getCoursByFrag(id);
         	    List<Etudiant> ets = fpDao.getEtudiants(id);
-     
         	   for(int i = 0; i<ets.size(); i++) { 
         	    	List<MResults> results  = new ArrayList<MResults>();
         	    	for(Cours c : cours) {
@@ -448,5 +447,7 @@ public class BulletinController {
         	    }
     			return ResponseEntity.ok(new JwtResponse<List<MParcours>>(false,ps, ""));
         }
+        
+        
         
 }

@@ -30,7 +30,10 @@ public interface PayrollDao extends JpaRepository<Payroll, Long> {
 	@Query("SELECT p FROM Payroll p WHERE p.id_mois=:mois AND p.id_acad=:year AND receive=:rec ")
 	List<Payroll> getPayroll(@Param("mois") Long mois,@Param("year") Long year, @Param("rec")  boolean rec);
 	
-	@Modifying
+	
+	
+	
+	@Modifying(clearAutomatically = true)
 	@Transactional
 	@Query("UPDATE   Payroll p SET p.pnom=:fname, p.nom =:lname WHERE p.code_user=:code ")
     void editFullName(@Param("code") String code,@Param("fname") String firstName ,@Param("lname") String lastName);

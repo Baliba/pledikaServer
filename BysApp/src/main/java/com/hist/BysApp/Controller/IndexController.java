@@ -22,12 +22,13 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -267,6 +268,7 @@ public class IndexController {
 	   
 	   }
 	   
+	   @Modifying
 	   @Transactional
 	   @RequestMapping(value = "/api/editName", method = RequestMethod.POST)
 	   public ResponseEntity<?>  editName(@RequestBody EditNameRequest u, Authentication auth) {
@@ -277,22 +279,24 @@ public class IndexController {
 		   pars.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
 		   payDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
 		   rDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
-		   
-		   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Payroll")); 
+		   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Modifier nom complet")); 
 	   }
+	   
 	   @Transactional
 	   @RequestMapping(value = "/api/editName/{id}", method = RequestMethod.POST)
 	   public ResponseEntity<?>  editNameByAdmin(@PathVariable("id") Long id,@RequestBody EditNameRequest u, Authentication auth) {
 		   UserEntity  utt = getUser(auth);
 		   if(utt.getRole().getName().equals(RoleName.MANAGER)  || utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
 		   UserEntity  ut = user.findById(id).get();
+		   
 		   ut.setFirstName(u.getFirstName());
 		   ut.setLastName(u.getLastName());
+		   ut = user.save(ut);
+		   rDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
 		   pars.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
 		   payDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
-		   rDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
-		   ut = user.save(ut);
-		   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Payroll")); 
+		 
+		   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Modifier nom complet ")); 
 		   }else {
 			   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
 		   }

@@ -14,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,10 +25,7 @@ import com.hist.BysApp.entities.member.UserEntity;
 
 import lombok.Data;
 
-/**
- *
- * @author User
- */
+
 @Entity
 @Data
 public class Results extends cObj implements Serializable {
@@ -38,8 +37,12 @@ public class Results extends cObj implements Serializable {
     
     @Column(unique=true)
     private String   code;
+    
     private String   code_student;
+    @Column(nullable = false, updatable=true)
     private String   nom;
+    
+    @Column(nullable = false, updatable=true)
     private String   pnom;
     private float    note_total;
     private float    note;

@@ -135,4 +135,15 @@ public class Etablissement extends cObj  implements Serializable {
     @Column(nullable = true, updatable=true)
     Long id_img;
     
+    @Column(nullable = false, columnDefinition=" boolean default false ")
+    private boolean tuts;
+    
+    @Column(nullable = true, updatable=true)
+    private String start_time;
+    @Column(nullable = true, updatable=true)
+    private String end_time;
+    
+    @Column(nullable = false, columnDefinition=" boolean default true")
+    private boolean bulletin;
+    
 }

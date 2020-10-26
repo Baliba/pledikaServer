@@ -106,5 +106,11 @@ public class Promo_af extends cObj implements Serializable {
     
     @Column(columnDefinition=" integer default 1 ")
     private int year_part;
+    
+    @Column(nullable = true, updatable=true)
+    private String start_time;
+    
+    @Column(nullable = true, updatable=true)
+    private String end_time;
 }
 

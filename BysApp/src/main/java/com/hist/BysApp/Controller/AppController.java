@@ -92,6 +92,7 @@ import com.hist.BysApp.projection.CourseView;
 import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
+import Palmares.NResults;
 import models.MUser;
 
 @Controller
@@ -776,7 +777,7 @@ public class AppController {
 					hc.setJours(pc.getJours());
 					hc.setHeure_cours(pc.getHeure_cours());
 					hc.setFrag_cours(fc);
-					hc.setCode(pc.getJours() + "-" + pc.getHeure_cours() + "-" + pf.getId() + "-" + fc.getId());
+					hc.setCode(pc.getJours() + "-" + pc.getHeure_cours() + "-" + pf.getId());
 					hc = hcDao.save(hc);
 					fc.setAHcours(hc);
 					fcs.add(fc);
@@ -855,14 +856,14 @@ public class AppController {
 				rs.add(r);
 			}
 		}
-		List<Results> rr = rDao.getEtudiants(fci);
-		return ResponseEntity.ok(new JwtResponse<List<Results>>(true, rr, "Les resultats"));
+		List<NResults> rr = rDao.getEtudiants(fci);
+		return ResponseEntity.ok(new JwtResponse<List<NResults>>(true, rr, "Les resultats"));
 	}
 
 	@RequestMapping(value = "/api/getResult/{fc}")
 	public ResponseEntity<?> getRes(@PathVariable("fc") Long fci) {
-		List<Results> rr = rDao.getEtudiants(fci);
-		return ResponseEntity.ok(new JwtResponse<List<Results>>(true, rr, "Les resultats"));
+		List<NResults> rr = rDao.getEtudiants(fci);
+		return ResponseEntity.ok(new JwtResponse<List<NResults>>(true, rr, "Les resultats"));
 	}
 
 	@RequestMapping(value = "/api/getBulletinFrag/{fc}")
@@ -924,8 +925,12 @@ public class AppController {
 	public ResponseEntity<?> getCoursProg(@PathVariable("idp") Long idp, @PathVariable("idg") Long idg) {
 		Programme p = pgDao.findById(idg).get();
 		List<Promo_cours> pcs = new ArrayList<Promo_cours>();
+		int nc = 0;
 		if (p.getCourse().size() > 0) {
 			Promotion pf = promo.findById(idp).get();
+			nc = pf.getPromo_cours().size();
+			int max = pf.getMax_cours();
+			if(nc<max) {
 			for (Course pc : p.getCourse()) {
 				Promo_cours fc = new Promo_cours();
 				String code = pc.getCode() + "-" + pf.getId();
@@ -942,9 +947,13 @@ public class AppController {
 					fc.setNote_rep(pc.getNote_rep());
 					fc = pcDao.save(fc);
 					pcs.add(fc);
-					
+					nc++;
+					if(nc>=max) {
+						break;
+					}
 				}
 			}
+		 }
 		}
 		return ResponseEntity.ok(new JwtResponse<List<Promo_cours>>(true, pcs, "promo_cours"));
 	}
@@ -1032,8 +1041,8 @@ public class AppController {
 	@Autowired
 	PayDao payD;
 
-	@RequestMapping(value = "/api/payment/{id}/{sold}/{idv}")
-	public ResponseEntity<?> payment(@PathVariable("idv") Long idv, @PathVariable("id") Long id,
+	@RequestMapping(value = "/api/payment/{id}/{sold}/{idv}/{tp}/{serie}")
+	public ResponseEntity<?> payment(@PathVariable("serie") String serie, @PathVariable("tp") int tp, @PathVariable("idv") Long idv, @PathVariable("id") Long id,
 		@PathVariable("sold") int montant, Authentication authentication) {
 		UserDetails me = (UserDetails) authentication.getPrincipal();
 		UserEntity cu = this.UserDetails.getUserInfo(me.getUsername());
@@ -1112,8 +1121,10 @@ public class AppController {
 						return ResponseEntity.ok(new JwtResponse<RPayment>(true, null, "Aucun versement disponible"));
 					}
 				}
-
+				List<String> TP = Arrays.asList("CASH","DEPOT BANCAIRE","MONCASH","NATCASH","AUTRES");
 				Payment pay = new Payment();
+				pay.setType_paiement(TP.get(tp));
+				pay.setSerie(serie);
 				pay.setPay_money((double) montant);
 				pay.setCode_etudiant(pars.getCode_student());
 				pay.setPromotion(pars.getPromo_name());

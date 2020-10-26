@@ -63,7 +63,7 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	@Query("SELECT p FROM Parcours p where p.code_student=:code ")
 	List<Parcours> getParcoursByCodeStudent(@Param("code") String  code);
 	
-	@Modifying
+	@Modifying(clearAutomatically = true)
 	@Transactional
 	@Query("UPDATE  Parcours p SET p.pnom=:fname, p.nom =:lname WHERE p.code_student=:code ")
     void editFullName(@Param("code") String code,@Param("fname") String firstName ,@Param("lname") String lastName);

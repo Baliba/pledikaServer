@@ -34,6 +34,6 @@ public interface FParcoursRepository extends JpaRepository<Parcours_frag, Long> 
     @Query("SELECT p FROM Parcours_frag p where p.promofrag.id=:id")
     List<Parcours_frag> getRFParcours(@Param("id") Long id); 
     
-    @Query("SELECT new  Palmares.Etudiant (p.id, p.nom, p.pnom,p.code_student)  FROM Parcours_frag p where p.promofrag.id=:id")
+    @Query("SELECT new  Palmares.Etudiant (p.id, p.parcours.user.lastName, p.parcours.user.firstName,p.code_student)  FROM Parcours_frag p where p.promofrag.id=:id ORDER BY p.nom, p.pnom")
     List<Etudiant> getEtudiants(@Param("id") Long id); 
 }

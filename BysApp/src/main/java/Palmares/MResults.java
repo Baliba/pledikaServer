@@ -10,6 +10,7 @@ public class MResults {
   int   coef;
   float note_total;
   Long idr;
+  String code_student;
 public MResults(Long idc, String nom, float note) {
 	super();
 	this.idc = idc;

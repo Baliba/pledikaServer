@@ -26,12 +26,15 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 /**
  *
  * @author User
  */
 @Entity
 @Data
+@DynamicUpdate
 public class Parcours extends cObj implements Serializable {
 
     private static final long serialVersionUID = 1L;

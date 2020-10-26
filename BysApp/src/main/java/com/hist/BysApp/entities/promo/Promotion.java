@@ -92,13 +92,19 @@ public class Promotion extends cObj implements Serializable {
     private double moy_accept;
     private double moy_reprise;
     private double moy_exc;
-    private String board,next_promo_name;
+    private String board, next_promo_name;
     private Long next_promo;
     private String prev_promo_name;
     private Long prev_promo;
-    private double  scolarite;
+    private double scolarite;
     private Long prog_id;
     
     @Column(columnDefinition="boolean default false")
     private boolean reprise;
+    @Column(columnDefinition=" integer default 25 ")
+    private int max_cours;
+    
+    @Column(columnDefinition="boolean default false")
+    private boolean last;
+    
 }
