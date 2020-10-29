@@ -179,9 +179,7 @@ public class EventController {
 	
 	@Autowired
 	EventDao eDao;
-	
-	@Value("${holiday.token}")
-	private String HOLYDAY_TOKEN;
+
 	
 	  public UserEntity  getUser (Authentication authentication){
 		   UserDetails me = (UserDetails) authentication.getPrincipal();
