@@ -11,9 +11,11 @@ import java.util.List;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
@@ -42,5 +44,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 
 	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE p.id!=:id  AND  p.niveau_rel.niveau.code=:code AND p.promo_af.id=:py AND p.next_promo IS NULL  ")
 	 List<PromoDto> getPrevPromo(@Param("py") Long prev_year,@Param("id") Long id, @Param("code") String code);
+	
+	 
 	
 }

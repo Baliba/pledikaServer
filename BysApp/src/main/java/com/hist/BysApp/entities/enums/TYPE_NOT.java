@@ -1,4 +1,4 @@
-package com.hist.BysApp.entities.config;
+package com.hist.BysApp.entities.enums;
 
 public enum TYPE_NOT {
 	FORGET_PASS,

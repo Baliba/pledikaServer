@@ -146,4 +146,6 @@ public class Etablissement extends cObj  implements Serializable {
     @Column(nullable = false, columnDefinition=" boolean default true")
     private boolean bulletin;
     
+    private String code_six, code_neuv, code_rheto, code_philo;
+    
 }

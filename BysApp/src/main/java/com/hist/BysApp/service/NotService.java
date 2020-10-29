@@ -15,7 +15,7 @@ import com.hist.BysApp.dao.Promo_coursRepo;
 import com.hist.BysApp.dao.UserRepository;
 import com.hist.BysApp.entities.config.LNot;
 import com.hist.BysApp.entities.config.Notification;
-import com.hist.BysApp.entities.config.TYPE_NOT;
+import com.hist.BysApp.entities.enums.TYPE_NOT;
 import com.hist.BysApp.entities.member.UserEntity;
 import com.hist.BysApp.entities.promo.Parcours;
 import com.hist.BysApp.entities.promo.Promo_cours;

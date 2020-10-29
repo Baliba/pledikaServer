@@ -1,5 +1,6 @@
 package Palmares;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -13,6 +14,7 @@ public class Etudiant {
 	List<MResults> mresults;
 	String code;
 	float total;
+	Date date_naiss;
 	public Etudiant(Long id, String nom, String pnom) {
 		super();
 		this.id = id;
@@ -26,5 +28,14 @@ public class Etudiant {
 		this.pnom = pnom;
 		this.code = code;
 	}
+	public Etudiant(String nom, String pnom, String code, Date date_naiss) {
+		super();
+		this.nom = nom;
+		this.pnom = pnom;
+		this.code = code;
+		this.date_naiss = date_naiss;
+	}
+	
+	
 
 }

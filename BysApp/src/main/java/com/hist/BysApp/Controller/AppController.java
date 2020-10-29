@@ -377,6 +377,7 @@ public class AppController {
 				}
 				// create parcours
 				Parcours p = new Parcours();
+				p.setId_promo(np.getId());
 				p.setActived(true);
 				// add user and promo
 				String code = nu.getCode() + "-" + u.getId_promo();

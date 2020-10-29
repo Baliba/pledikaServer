@@ -17,16 +17,15 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.hist.BysApp.entities.Contact;
+import com.hist.BysApp.entities.Event;
+import com.hist.BysApp.entities.enums.CEvent;
 import com.hist.BysApp.entities.member.UserEntity;
+import com.hist.BysApp.entities.promo.Course;
 
 @CrossOrigin("*")
 @RepositoryRestResource
-public interface ContactDao extends JpaRepository<Contact, Long> {
-	
-	@Query("SELECT c FROM Contact c WHERE read=:r ORDER BY id DESC")
-	Page<Contact> getContact(Pageable paging,@Param("r") boolean read);
-
-	@Query("SELECT COUNT(c) FROM Contact c WHERE read=:r GROUP BY id ORDER BY id DESC")
-	int  countContact(@Param("r") boolean read);
+public interface EventDao extends JpaRepository<Event, Long> {
+	 @Query("SELECT e FROM Event e WHERE e.categorie = :c ")
+     List<Event> getByCat(@Param("c") CEvent cat);
 
 }

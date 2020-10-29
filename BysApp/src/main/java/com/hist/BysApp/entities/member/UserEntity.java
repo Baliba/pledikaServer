@@ -181,6 +181,8 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     
     private int granted = 0;
     
+    private String annee_six, annee_neuv, annee_rheto, annee_philo;
+    
     public UserEntity(){}
     public UserEntity(String username, String password, String fname, String lname ) {
         this.username  = username;

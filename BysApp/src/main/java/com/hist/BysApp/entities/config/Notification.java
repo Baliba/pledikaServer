@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import com.hist.BysApp.entities.cObj;
+import com.hist.BysApp.entities.enums.TYPE_NOT;
+
 import lombok.Data;
 @Data
 @Entity

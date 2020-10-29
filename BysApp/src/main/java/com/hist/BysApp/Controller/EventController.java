@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import org.springframework.aop.AopInvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,8 +61,10 @@ import com.hist.BysApp.Response.ResultRespose;
 import com.hist.BysApp.component.StaticData;
 import com.hist.BysApp.dao.*;
 import com.hist.BysApp.entities.Contact;
+import com.hist.BysApp.entities.Event;
 import com.hist.BysApp.entities.Location.Ville;
 import com.hist.BysApp.entities.config.Etablissement;
+import com.hist.BysApp.entities.enums.CEvent;
 import com.hist.BysApp.entities.grade.Document;
 import com.hist.BysApp.entities.grade.Domaine;
 import com.hist.BysApp.entities.grade.Niveau;
@@ -92,10 +95,11 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
 import Palmares.MResults;
+import lombok.Data;
 import models.MParcours;
 
 @Controller 
-public class SystemController {
+public class EventController {
 	
 	
 	@Autowired 
@@ -173,6 +177,12 @@ public class SystemController {
 	@Autowired
 	ContactDao   contDao;
 	
+	@Autowired
+	EventDao eDao;
+	
+	@Value("${holiday.token}")
+	private String HOLYDAY_TOKEN;
+	
 	  public UserEntity  getUser (Authentication authentication){
 		   UserDetails me = (UserDetails) authentication.getPrincipal();
 	       return  this.UserDetails.getUserInfo(me.getUsername());
@@ -186,38 +196,53 @@ public class SystemController {
 	        return formattedDate.trim();
 	   }
 	  
-       @RequestMapping(value = "/api/getContacts")
+       @RequestMapping(value = "/api/getEventInfo")
 		public ResponseEntity<?> getContacts(Authentication auth) {
-      	    List<Page<Contact>> lc = new ArrayList<Page<Contact>>();
-      	    lc.add(getContacts(0,100,true));
-      	    lc.add(getContacts(0,100,false));
-  			return ResponseEntity.ok(new JwtResponse<List<Page<Contact>>>(false,lc, ""));
+    	 CEvent[] cats =  CEvent.values();
+  		return ResponseEntity.ok(new JwtResponse<REvent>(false,new REvent(cats),""));
       }
        
-       public Page<Contact> getContacts(Integer pageNo, Integer pageSize,boolean query) {
-           Pageable paging = PageRequest.of(pageNo, pageSize);
-           Page<Contact> pagedResult  = contDao.getContact(paging,query);
-         
-           return  pagedResult;
-            
+     
+      
+       @RequestMapping(value = "/api/getEventByCat/{cat}")
+    		public ResponseEntity<?> getEventByCat(Authentication auth, @PathVariable("cat") CEvent cat) {
+        	List<Event> events = eDao.getByCat(cat);
+      		return ResponseEntity.ok(new JwtResponse<List<Event>>(false,events,""));
        }
        
-       @RequestMapping(value = "/api/countContacts")
-		public ResponseEntity<?> countContacts(Authentication auth) {
-    	   UserEntity  utt = getUser(auth);
-    	   int c = 0;
-		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PROF)) {
-     	     
-			   try{
-				   c= contDao.countContact(false);
-				   
-			   } catch(AopInvocationException e) {
-				   
-			   }
-		   }
-		   return ResponseEntity.ok(new JwtResponse<String>(false,String.valueOf(c), ""));
-     }
+       @RequestMapping(value = "/api/getEvents")
+		public ResponseEntity<?> getEventByCat(Authentication auth) {
+    	Promo_af af =pafDao.getActived();
+    	List<Event> jf = eDao.getByCat(CEvent.JOUR_FERIE);
+    	Events e = new Events();
+    	e.setJf(jf);
+ 		return ResponseEntity.ok(new JwtResponse<Events>(false,e,""));
+       }
        
+        @Modifying
+      	@Transactional
+        @RequestMapping(value = "/api/arrangePars/{id}")
+		public ResponseEntity<?> arrangePars(Authentication auth, @PathVariable("id") Long id ) {
+  	    pDao.arrageId(id);
+		return ResponseEntity.ok(new JwtResponse<String>(false,"",""));
+       }
+       
+       @Data
+       public class REvent{
+     	  CEvent[] cats;
+ 		public REvent(CEvent[] cats) {
+ 			super();
+ 			this.cats = cats;
+ 		}
+     	  
+       }
+       
+       @Data
+       public class Events{
+    	   List<Event> jf,cg,ft,meet,app;
+        
+       }
+      
        
 
 }

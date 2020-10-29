@@ -78,4 +78,8 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	@Transactional
 	@Query("UPDATE Parcours p SET p.actived=:state WHERE p.promotion.id=:id AND p.code_student=:code  ")
     void closeOneByPromo(@Param("id") Long id,@Param("code") String code, @Param("state") boolean state);
+    @Modifying
+   	@Transactional
+	@Query("UPDATE Parcours p SET id_promo=:id WHERE p.promotion.id=:id")
+	void arrageId(@Param("id")Long id);
 }
