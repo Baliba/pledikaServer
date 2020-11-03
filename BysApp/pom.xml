@@ -133,10 +133,10 @@
 
 	<build>
 		<plugins>
-		<!-- 	<plugin>
+		<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> -->
+			</plugin> 
 			<!-- to delete -->
 			 <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -152,11 +152,11 @@
                 </execution>
             </executions>
         </plugin>
-	           <plugin>
-        <groupId>com.heroku.sdk</groupId>
-        <artifactId>heroku-maven-plugin</artifactId>
-        <version>{version}</version>
-      </plugin>
+			   <plugin>
+		        <groupId>com.heroku.sdk</groupId>
+		        <artifactId>heroku-maven-plugin</artifactId>
+		        <version>{version}</version>
+		      </plugin>
 	    <!--  <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
