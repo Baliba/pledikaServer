@@ -152,7 +152,8 @@
                 </execution>
             </executions>
         </plugin>
-			 <plugin>
+	          
+	        <!--   <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>{version}</version>
@@ -168,7 +169,8 @@
                             ${project.build.directory}/${project.build.finalName}.jar</web>
                     </processTypes>
                 </configuration>
-            </plugin>
+            </plugin> -->
+            
 		</plugins>
 	
 	</build>
