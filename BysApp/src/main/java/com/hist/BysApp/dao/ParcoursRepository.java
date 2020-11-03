@@ -9,6 +9,7 @@ import com.hist.BysApp.Response.ResultRespose;
 import com.hist.BysApp.entities.paiement.OPaie;
 import com.hist.BysApp.entities.promo.Parcours;
 
+import dto.User;
 import models.MParcours;
 
 import java.util.List;
@@ -31,8 +32,16 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	@Query("UPDATE Parcours p SET p.actived = false WHERE p.id!=:id")
     void close(@Param("id") Long id);
 	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Parcours p SET p.actived =:s WHERE p.id=:id")
+    void closeOneForEnd(@Param("id") Long id,@Param("s") boolean  s );
+	
 	@Query("SELECT p FROM Parcours p where p.promotion.id=:id ORDER BY p.nom ASC")
     List<Parcours> getParcours(@Param("id") Long id); 
+	
+	@Query("SELECT p FROM Parcours p where p.promotion.id=:id AND p.id=:idu ORDER BY p.nom ASC")
+    List<Parcours> getOParcours(@Param("id") Long id, @Param("idu") Long idu); 
 	
 	@Query("SELECT p FROM Parcours p where p.promotion.id=:id AND p.actived = true ORDER BY p.nom ASC")
     List<Parcours> getActParcours(@Param("id") Long id); 
@@ -56,6 +65,9 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	
 	@Query("SELECT p FROM Parcours p where p.actived = :state AND p.promotion.niveau_rel.niveau.code=:code ")
     List<Parcours> getAllParcours(@Param("state") boolean state, @Param("code") String code); 
+	
+	@Query("SELECT new dto.User(p.id, p.user.code, p.user.sexe, p.user.lastName,p.user.firstName, p.promo_name,'STUDENT', false, p.user.granted, p.user.id) FROM Parcours p where p.actived = :state AND p.promotion.niveau_rel.niveau.code=:code AND p.promotion.promo_af.id=:id ")
+    List<User> getAllParcoursNew(@Param("state") boolean state, @Param("code") String code, @Param("id") Long Long); 
 	
 	@Query("SELECT p FROM Parcours p where p.id =:id ")
     Parcours getOneParcours(@Param("id") Long id);
@@ -82,4 +94,14 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
    	@Transactional
 	@Query("UPDATE Parcours p SET id_promo=:id WHERE p.promotion.id=:id")
 	void arrageId(@Param("id")Long id);
+    
+    @Modifying
+	@Transactional
+	@Query("UPDATE Parcours p SET p.moy_final =:s, p.decision=:d WHERE p.id=:id")
+    void setDec(@Param("id") Long id,@Param("d") Integer  d,@Param("s") double s );
+    
+	
+	@Query("SELECT new dto.User(p.id, p.user.code, p.user.sexe, p.user.lastName,p.user.firstName, p.promo_name,'STUDENT', false, p.user.granted, p.user.id, p.moy_final, p.user.date_de_naiss, p.user.pob ,p.user.matricule,p.user.identifiant, p.user.nom_mere, p.user.annee_six, p.user.annee_neuv, p.user.annee_rheto, p.user.annee_philo) FROM Parcours p WHERE  p.promotion.id=:idp ORDER BY p.user.lastName, p.user.firstName ")
+    List<User> getDecisionFinale(@Param("idp") Long  idp); 
+
 }

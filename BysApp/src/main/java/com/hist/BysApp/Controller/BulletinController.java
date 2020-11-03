@@ -103,6 +103,7 @@ import com.hist.BysApp.entities.promo.Results;
 import com.hist.BysApp.factories.Helper;
 import com.hist.BysApp.model.ASDto;
 import com.hist.BysApp.model.BulletinGeneral;
+import com.hist.BysApp.model.BulletinGeneralPF;
 import com.hist.BysApp.model.FicheFourniture;
 import com.hist.BysApp.model.MoyDto;
 import com.hist.BysApp.model.PromoDto;
@@ -120,6 +121,7 @@ import com.hist.BysApp.service.NotService;
 import Palmares.Cours;
 import Palmares.Etudiant;
 import Palmares.MResults;
+import Palmares.PFModel;
 import Palmares.Palmares;
 import models.MParcours;
 
@@ -241,29 +243,59 @@ public class BulletinController {
   		public ResponseEntity<?> resultsForBG(Authentication auth,@PathVariable("id") Long id) {
   			   UserEntity  utt = getUser(auth);
   			   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PROF)) {
-  				   List<PromoFrag> pfs = pfDao.findBasePeriod(id);
+  				   List<PFModel> pfs = pfDao.findBasePeriodPF(id);
   				   List<Parcours>  ps =  pars.getParcours(id);
   				   List<List<Results>>   lor = Arrays.asList();
   				   HashMap<Long,HashMap<Long,List<Results>>> map = new HashMap<>(); 
   				   HashMap<Long,Parcours> pr = new HashMap<>(); 
-  				   HashMap<String,PromoFrag> fg = new HashMap<>();
+  				   HashMap<String,PFModel> fg = new HashMap<>();
   				   for (Parcours user: ps) {
   					  HashMap<Long,List<Results>> res = new HashMap<>(); 
-  					  for (PromoFrag frag: pfs) {
+  					  for (PFModel frag: pfs) {
   					      res.put(frag.getId(),rDao.getBulletinGen(user.getId(), frag.getId()));
   					      fg.put(""+frag.getId()+"",frag);
     				   } 
   					 map.put(user.getId(),res);
   					 pr.put(user.getId(),user);
   				   }
-  				    BulletinGeneral bg = new BulletinGeneral();
+  				    BulletinGeneralPF bg = new BulletinGeneralPF();
   				    bg.setResults(map);
   				    bg.setParcours(pr);
   				    bg.setPromofrag(fg);
-  				   return ResponseEntity.ok(new JwtResponse<BulletinGeneral>(true, bg, "Bulletin")); 
+  				   return ResponseEntity.ok(new JwtResponse<BulletinGeneralPF>(true, bg, "Bulletin")); 
   			   } else {
   			       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
   		      }
+  		}
+        
+        
+        @RequestMapping(value = "/api/resultsForOBG/{id}/{idu}")
+  		public ResponseEntity<?> resultsForOBG(Authentication auth,@PathVariable("id") Long id, @PathVariable("idu") Long idu) {
+        	UserEntity  utt = getUser(auth);
+			   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PROF)) {
+				   List<PFModel> pfs = pfDao.findBasePeriodPF(id);
+				   List<Parcours>  ps =  pars.getOParcours(id,idu);
+				   List<List<Results>>   lor = Arrays.asList();
+				   HashMap<Long,HashMap<Long,List<Results>>> map = new HashMap<>(); 
+				   HashMap<Long,Parcours> pr = new HashMap<>(); 
+				   HashMap<String,PFModel> fg = new HashMap<>();
+				   for (Parcours user: ps) {
+					  HashMap<Long,List<Results>> res = new HashMap<>(); 
+					  for (PFModel frag: pfs) {
+					      res.put(frag.getId(),rDao.getBulletinGen(user.getId(), frag.getId()));
+					      fg.put(""+frag.getId()+"",frag);
+ 				   } 
+					 map.put(user.getId(),res);
+					 pr.put(user.getId(),user);
+				   }
+				    BulletinGeneralPF bg = new BulletinGeneralPF();
+				    bg.setResults(map);
+				    bg.setParcours(pr);
+				    bg.setPromofrag(fg);
+				   return ResponseEntity.ok(new JwtResponse<BulletinGeneralPF>(true, bg, "Bulletin")); 
+			   } else {
+			       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		      }
   		}
         
         @RequestMapping(value = "/api/getProgrammes")
@@ -386,7 +418,7 @@ public class BulletinController {
         	   for(int i = 0; i<ets.size(); i++) { 
         	    	List<MResults> results  = new ArrayList<MResults>();
         	    	for(Cours c : cours) {
-        	    	   MResults mr = new MResults(c.getId(),c.getName(),0);	  
+        	    	   MResults mr = new MResults(c.getId(),c.getName(),0,c.getNote_total());	  
         	    	   results.add(mr);
         	    	}
         	      ets.get(i).setResults(results);
@@ -408,7 +440,7 @@ public class BulletinController {
         	   for(int i = 0; i<ets.size(); i++) { 
         	    	List<MResults> results  = new ArrayList<MResults>();
         	    	for(Cours c : cours) {
-        	    	   MResults mr = new MResults(c.getId(),c.getName(),0);	  
+        	    	   MResults mr = new MResults(c.getId(),c.getName(),0,c.getNote_total());	  
         	    	   results.add(mr);
         	    	}
         	      ets.get(i).setResults(results);

@@ -61,8 +61,10 @@ public class Parcours extends cObj implements Serializable {
 	@JsonIgnoreProperties({"parcours","promo_cours","promofrag","promo_af","niveau_rel","titulaire"})
     @JsonManagedReference
     private Promotion promotion;
-    @Column(columnDefinition=" float default 0 ")
-    private float moy_final;
+    
+    @Column(columnDefinition=" double default 0 ")
+    private double moy_final;
+    
     private String promo_name;
     private String  niv_code; 
     private String  cycle_code; 
@@ -88,10 +90,9 @@ public class Parcours extends cObj implements Serializable {
     private String note_3;
     private int    print;
     private boolean reprise;
-    
     @Column(columnDefinition=" integer default 0 ")
     private Integer decision;
     
-    private Long id_promo;
+    Long id_promo;
     
 }

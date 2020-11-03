@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.hist.BysApp.entities.promo.Frag_cours;
 import com.hist.BysApp.entities.promo.PromoFrag;
 
+import Palmares.PFModel;
+
 @CrossOrigin("*")
 @RepositoryRestResource
 public interface PFragDao extends JpaRepository<PromoFrag, Long> {
@@ -31,4 +33,7 @@ public interface PFragDao extends JpaRepository<PromoFrag, Long> {
     
     @Query("SELECT  pf FROM PromoFrag pf WHERE promotion.id=:idp AND pf.base=true ORDER BY pf.code ASC")
     List<PromoFrag> findBasePeriod(@Param("idp") Long idp);
+    
+    @Query("SELECT new Palmares.PFModel(pf.id, pf.share_code) FROM PromoFrag pf WHERE promotion.id=:idp AND pf.base=true ORDER BY pf.code ASC")
+	List<PFModel> findBasePeriodPF(@Param("idp") Long idp);
 }

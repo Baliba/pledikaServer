@@ -504,6 +504,24 @@ public class IndexController {
 		   
 	   }
 	   
+	   @RequestMapping(value = "/api/editExc/{id}/{b}")
+	   public ResponseEntity<?>  exc(@PathVariable("b") boolean b,@PathVariable("id") Long code, Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+			   UserEntity  ut = user.findById(code).get();
+			   if(b) {
+				  ut.setEnabled(false); 
+			   }
+			   ut.setExclude(b);
+			   ut=user.save(ut);
+			   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Modification affectuée avec succès")); 
+		   }
+		   else {
+		       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+		   
+	   }
+	   
 	   @Transactional
 	   @RequestMapping(value = "/api/setBoard/{id}", method = RequestMethod.POST)
 	   public ResponseEntity<?>  editBoard(@RequestBody EditNameRequest u,@PathVariable("id") Long id, Authentication auth) {
@@ -680,16 +698,13 @@ public class IndexController {
 	//   add46a571483582e0997bc80a7d62667
 	   
 	   @Transactional
-	   @RequestMapping(value = "/api/getPromoToUpgrade/{id}/{af}")
-	   public ResponseEntity<?> getPromo(Authentication auth,@PathVariable("id") Long id , @PathVariable("af") Long af) {
+	   @RequestMapping(value = "/api/getPromoToUpgrade/{id}")
+	   public ResponseEntity<?> getPromo(Authentication auth,@PathVariable("id") Long id ) {
 		   UserEntity  utt = getUser(auth);
 		   Promotion  p = promo.findById(id).get();
 		   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) ) || ( utt.getRole().getName().equals(RoleName.PROF) && p.getTitulaire().getId()==utt.getId()) ) {
 			   String niv = p.getNiveau_rel().getNiveau().getNext();
-			/*
-			 * Long sid =0L; for(Niveau_rel rnl: nr) { if(rnl.getId()==p.getId()) { sid =
-			 * rnl.getId(); break; } }
-			 */
+			   Long af = p.getPromo_af().getNext_year();
 			   List<PromoDto> ps = promo.getPromoV2(p.getId(),niv,af);
 			 return ResponseEntity.ok(new JwtResponse<List<PromoDto>>(false,ps,"Promotions")); 
 		   } else {
@@ -703,8 +718,23 @@ public class IndexController {
 		   UserEntity  utt = getUser(auth);
 		   Promotion  p = promo.findById(id).get();
 		   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) ) || ( utt.getRole().getName().equals(RoleName.PROF) && p.getTitulaire().getId()==utt.getId()) ) {
-			   List<MoyDto> ps = rDao.getEtudiantsToUpgrade(p.getId());
+			   List<MoyDto> ps = rDao.getEtudiantsToMG(p.getId());
 			   return ResponseEntity.ok(new JwtResponse<List<MoyDto>>(false,ps,"Etudiants de la  promotion ("+id+")")); 
+		   } else {
+			   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+	   }
+	   
+
+	   @RequestMapping(value = "/api/getStudentToOver")
+	   public ResponseEntity<?> getStudent(Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   Etablissement e = etabDao.findAll().get(0);
+		   String code = e.getCode_philo();
+		   Promo_af p = pafDao.getActived();
+		   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+			   List<MoyDto> ps = rDao.getEtudiantsToOver(p.getId(), code);
+			   return ResponseEntity.ok(new JwtResponse<List<MoyDto>>(false,ps,"Etudiants finissants")); 
 		   } else {
 			   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
 	      }
@@ -717,9 +747,11 @@ public class IndexController {
 		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.MANAGER) ) {
 			   Long id = year.getId();
 			   float  mgain = pvd.rapportGain(id);
-			   float  gain =  pvd.rapportRealGain(id);
+			   float  gain  =  pvd.rapportRealGain(id);
+			   float  bgain  = 0;
+			   try {  bgain = pvd.rapportBourse(id); } catch(Exception e) {}
 			   float  tgain = mgain-gain;
-			   RPaie pr = new RPaie(mgain,gain,tgain);
+			   RPaie pr = new RPaie(mgain,gain,tgain,bgain);
 			   return ResponseEntity.ok(new JwtResponse<RPaie>(false,pr,"Rapport de caisse")); 
 		     } else {
 			   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));

@@ -109,7 +109,8 @@ public class Etablissement extends cObj  implements Serializable {
     
     @Column(nullable = true, columnDefinition=" integer default 1 " )
     private int reprise;
-    
+    private String pfail_msg;
+    private String ppass_msg;
     private String fail_msg;
     private String pass_msg;
     private String fail_msg_rep;
@@ -137,6 +138,9 @@ public class Etablissement extends cObj  implements Serializable {
     
     @Column(nullable = false, columnDefinition=" boolean default false ")
     private boolean tuts;
+    
+    @Column(nullable = false, columnDefinition=" boolean default false ")
+    private boolean app;
     
     @Column(nullable = true, updatable=true)
     private String start_time;

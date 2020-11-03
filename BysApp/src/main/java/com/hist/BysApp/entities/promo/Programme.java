@@ -59,4 +59,9 @@ public class Programme  extends cObj implements Serializable {
 	private List<ProgFourniture> progfourniture;
     
 	private String  niveau;
+	
+	   @Column(columnDefinition=" integer default 24 ")
+	   private Integer max_cours;
+	   @Column(columnDefinition=" integer default 24 ")
+	   private Integer max_four;
 }

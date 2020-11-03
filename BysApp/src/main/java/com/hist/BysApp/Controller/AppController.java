@@ -93,6 +93,7 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
 import Palmares.NResults;
+import dto.DCours;
 import models.MUser;
 
 @Controller
@@ -875,12 +876,17 @@ public class AppController {
 
 	@RequestMapping(value = "/api/getMoyGenFrag/{fc}")
 	public ResponseEntity<?> getMoyGen(@PathVariable("fc") Long id) {
-		float total = rDao.getNoteTotalGen(id);
-		float note = rDao.getNoteGen(id);
-		float moy = 1;
-		if (total != 0 && note != 0) {
-			moy = note / total;
-		}
+		float total =0; 
+		float note=0;
+		float moy =0;
+		try {
+			total = rDao.getNoteTotalGen(id);
+			note = rDao.getNoteGen(id);
+			if (total != 0 && note != 0) {
+				moy = note / total;
+			}
+		}catch(Exception e) {}
+		 
 		return ResponseEntity.ok(moy);
 	}
 
@@ -904,7 +910,7 @@ public class AppController {
 		Programme p = pgDao.findById(id).get();
 		java.util.List<Long> ids = new ArrayList<>();
 		int s = p.getCourse().size();
-		List<Course> c;
+		List<DCours> c;
 		if (s > 0) {
 			for (Course cn : p.getCourse()) {
 				ids.add(cn.getId());
@@ -913,7 +919,7 @@ public class AppController {
 		} else {
 			c = this.cDao.getListCours(o);
 		}
-		return ResponseEntity.ok(new JwtResponse<List<Course>>(true, c, "Les resultats"));
+		return ResponseEntity.ok(new JwtResponse<List<DCours>>(true, c, "Les resultats"));
 	}
 
 	@RequestMapping(value = "/api/getProgByNiv/{niv}")
@@ -1011,7 +1017,10 @@ public class AppController {
 		UserDetails me = (UserDetails) authentication.getPrincipal();
 		UserEntity cu = this.UserDetails.getUserInfo(me.getUsername());
 		Date d = new Date();
-		List<PaiementAdmission> p = adp.getMyPayment(cu.getId(), d);
+		List<PaiementAdmission> p  = Arrays.asList();
+		try {
+		 p =  adp.getMyPayment(cu.getId(), d);
+		}catch(Exception e) {}
 		return ResponseEntity.ok(new JwtResponse<List<PaiementAdmission>>(true, p, "PAYMENT"));
 	}
 
@@ -1027,7 +1036,8 @@ public class AppController {
 		List<Parcours> p = pDao.getAllParcours(state, code);
 		return ResponseEntity.ok(new JwtResponse<List<Parcours>>(true, p, "parcours"));
 	}
-
+	
+	
 	@RequestMapping(value = "/api/getOneParcours/{state}")
 	public ResponseEntity<?> getAllPc(@PathVariable("state") Long state) {
 		Parcours p = pDao.getOneParcours(state);

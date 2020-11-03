@@ -36,6 +36,9 @@ public interface PVDao extends JpaRepository<PVersement, Long> {
 	@Query("SELECT SUM(p.montant_pay) FROM PVersement p WHERE p.actived=true AND p.type_verse!=3 AND p.parcours.promotion.promo_af.id=:id ")
 	float  rapportRealGain(@Param("id") Long id);
 	
+	@Query("SELECT SUM(p.montant_init) FROM PVersement p WHERE p.actived=true AND p.type_verse!=3 AND p.parcours.promotion.promo_af.id=:id AND p.parcours.granted!=0 ")
+	float  rapportBourse(@Param("id") Long id);
+	
 	
 	@Query("SELECT SUM(p.montant_to_pay) FROM PVersement p WHERE p.actived=true AND   p.parcours.promotion.id=:id AND p.type_verse!=3 ")
 	float  rapportGainPromo(@Param("id") Long id);

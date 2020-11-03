@@ -135,7 +135,7 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     @NotFound(action = NotFoundAction.IGNORE)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Ville lieu_de_naiss;
-    
+    private String   pob;
     @OneToOne
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private  PaiementAdmission paiement_admission;
@@ -182,6 +182,9 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     private int granted = 0;
     
     private String annee_six, annee_neuv, annee_rheto, annee_philo;
+    
+    @Column(nullable = false, columnDefinition=" boolean default false ")
+    private boolean exclude;
     
     public UserEntity(){}
     public UserEntity(String username, String password, String fname, String lname ) {

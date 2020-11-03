@@ -223,13 +223,13 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
        //-------------------------------
         // create examen fragment 
         createFragIfNotFound("1er Controle");
-        createFragIfNotFound("2er Controle");
+        createFragIfNotFound("2eme Controle");
         createFragIfNotFound("Bimensuel 1");
-        createFragIfNotFound("3er Controle");
+        createFragIfNotFound("3eme Controle");
         createFragIfNotFound("Bimensuel 2");
-        createFragIfNotFound("4er Controle");
+        createFragIfNotFound("4eme Controle");
         createFragIfNotFoundRP("Examen Extraordinaire 1");
-        createFragIfNotFoundRP("Examen Extraordinaire 1");
+        createFragIfNotFoundRP("Examen Extraordinaire 2");
         createFragIfNotFound("Fragment A");
         createFragIfNotFound("Fragment B");
         createFragIfNotFound("Fragment C");

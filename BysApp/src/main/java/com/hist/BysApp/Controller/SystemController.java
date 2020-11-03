@@ -7,6 +7,8 @@ package com.hist.BysApp.Controller;
 
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -85,6 +87,7 @@ import com.hist.BysApp.entities.promo.Promo_cours;
 import com.hist.BysApp.entities.promo.Promotion;
 import com.hist.BysApp.entities.promo.Results;
 import com.hist.BysApp.factories.Helper;
+import com.hist.BysApp.model.MoyDto;
 import com.hist.BysApp.model.VilleAndDoc;
 import com.hist.BysApp.model.VilleAndNiveau;
 import com.hist.BysApp.projection.CourseView;
@@ -92,6 +95,7 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
 import Palmares.MResults;
+import dto.User;
 import models.MParcours;
 
 @Controller 
@@ -217,6 +221,310 @@ public class SystemController {
 		   }
 		   return ResponseEntity.ok(new JwtResponse<String>(false,String.valueOf(c), ""));
      }
+       
+       
+	   @RequestMapping(value = "/api/getExclu")
+	   public ResponseEntity<?>  expulsion(Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+			   List<User> users = new ArrayList();
+			   try {users = user.getExclude(true);} catch(Exception e) {}
+			   return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"La liste des entités exlues")); 
+		   }
+		   else {
+		       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+		   
+	   }
+	   
+	   @RequestMapping(value = "/api/toExclu")
+	   public ResponseEntity<?>  toExclude(Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+			   List<User> users = new ArrayList();
+			   try {users = user.getExclude(false);} catch(Exception e) {}
+			   return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"La liste des entités non  exlues")); 
+		   }
+		   else {
+		       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+		   
+	   }
+	   
+	   @RequestMapping(value = "/api/getBoursier")
+	   public ResponseEntity<?>  getBoursier(Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+			   List<User> users = new ArrayList(); 
+			   
+			   try {users = user.getBoursier(RoleName.STUDENT);} catch(Exception e) {}
+			   return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"La liste des boursiers")); 
+		   }
+		   else {
+		       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+		   
+	   }
+	   
+	   @RequestMapping(value = "/api/getFinissant")
+	   public ResponseEntity<?>  getFinnisant(Authentication auth) {
+		   UserEntity  utt = getUser(auth);
+		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+			   List<User> users = new ArrayList(); 
+			   try {users = user.getFinissant(RoleName.STUDENT);} catch(Exception e) {}
+			   return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"La liste des finissants")); 
+		   }
+		   else {
+		       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	      }
+		   
+	   }
+	   
+	   
+	    @RequestMapping(value = "/api/getAllParcoursNew/{state}/{code}")
+		public ResponseEntity<?> getAllPcNew(@PathVariable("code") String code, @PathVariable("state") boolean state) {
+		    Promo_af paf = pafDao.getActived();
+			List<User> p = pDao.getAllParcoursNew(state, code, paf.getId());
+			return ResponseEntity.ok(new JwtResponse<List<User>>(true, p, "parcours"));
+		}
+	       @Modifying
+	 	   @Transactional
+	       @RequestMapping(value = "/api/setLO/{idu}/{idp}/{state}")
+		   public ResponseEntity<?>  setLO(Authentication auth,@PathVariable("idu") Long idu,@PathVariable("idp") Long idp, @PathVariable("state") boolean s) {
+			   UserEntity  utt = getUser(auth);
+			   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+				    user.setLover(idu,s);
+				    if(s) {
+				      pars.closeOneForEnd(idp,!s);
+				    }
+				   return ResponseEntity.ok(new JwtResponse<String>(false,"","La liste des finissants")); 
+			   }
+			   else {
+			       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		      }
+			   
+		   }
+	    @Modifying
+	 	@Transactional
+	    @RequestMapping(value = "/api/closeOnePars/{idp}/{state}")
+		   public ResponseEntity<?>  setLO(Authentication auth,@PathVariable("idp") Long idp, @PathVariable("state") boolean s ) {
+			   UserEntity  utt = getUser(auth);
+			   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+				    pars.closeOneForEnd(idp,s);
+				   return ResponseEntity.ok(new JwtResponse<String>(false,"","La liste des finissants")); 
+			   }
+			   else {
+			       return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		      }
+			   
+		   }
+	    
+	    
+	    @Modifying
+	 	@Transactional
+	    @RequestMapping(value = "/api/setMoyenGenFini")
+		   public ResponseEntity<?>  setMoyenGenFini(Authentication auth) {
+	    	 UserEntity  utt = getUser(auth);
+			   Etablissement e = etabDao.findAll().get(0);
+			   String code = e.getCode_philo();
+			   Promo_af p = pafDao.getActived();
+			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+				   List<MoyDto> ps = rDao.getEtudiantsToOver(p.getId(), code);
+				   for(MoyDto o : ps) {
+	                      double moy = (o.getNote()/o.getTotal())*o.getMoy_total();
+	                      moy = round(moy, 2);
+	                      Integer dec = 3;
+	                      if(moy!=0.0) {
+	                      if(moy>=o.getMoy_accept()) {
+	                    	  dec = 1;
+	                      }
+	                      pars.setDec(o.getIdp(), dec, moy);
+	                      }else { pars.setDec(o.getIdp(), dec,0); continue;}
+					   }
+				   return ResponseEntity.ok(new JwtResponse<String>(false,"","Etudiants finissants")); 
+			   } else {
+				   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		      }
+			   
+		  }
+	    
+	           @Modifying
+	 	       @Transactional
+	 	       @RequestMapping(value = "/api/setMoyenGen/{id}")
+	 		   public ResponseEntity<?>  setMoyenGen (Authentication auth,@PathVariable("id") Long id) {
+	 	    	 UserEntity  utt = getUser(auth);
+	 			 
+	 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	 				   List<MoyDto> ps = rDao.getEtudiantsToMG(id);
+	 				  for(MoyDto o : ps) {
+	                      double moy = (o.getNote()/o.getTotal())*o.getMoy_total();
+	                      moy = round(moy, 2);
+	                      Integer dec = 3;
+	                      if(moy!=0.0) {
+	                      if(moy>=o.getMoy_accept()) {
+	                    	  dec = 1;
+	                      }else if(moy>= o.getMoy_rep() && moy<o.getMoy_accept()) {
+	                    	  dec=2;
+	                      } 
+	                      pars.setDec(o.getIdp(), dec, moy);
+	                      }else { pars.setDec(o.getIdp(), dec,0); continue;}
+					   }
+	 				   return ResponseEntity.ok(new JwtResponse<String>(false,"","Etudiants finissants")); 
+	 			   } else {
+	 				   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	 		      }
+	 			   
+	 		  }
+	           
+	        
+	           public static double round(double value, int places) {
+	        	    if (places < 0) throw new IllegalArgumentException();
+	        	    BigDecimal bd = BigDecimal.valueOf(value);
+	        	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	        	    return bd.doubleValue();
+	        	}
+	           
+	        @RequestMapping(value = "/api/addOneStudentToPromoFrag/{idf}/{idp}")
+	       	public ResponseEntity<?> addOneStudenToPromoFrag(Authentication auth,@PathVariable("idf") Long idf, @PathVariable("idp") Long idp) {
+	        	 UserEntity  utt = getUser(auth);
+	 		 if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	       		Parcours pc = pars.getOne(idp);
+	       		PromoFrag pfg = pfDao.findById(idf).get();
+	       				Parcours_frag fc = new Parcours_frag();
+	       				String code = pc.getCode() + "-" + idf;
+	       				Parcours_frag fct = fpDao.findByCode(code);
+	       				if (fct == null) {
+	       					fc.setCode(code);
+	       					fc.setCode_student(pc.getCode_student());
+	       					fc.setNom(pc.getNom());
+	       					fc.setPnom(pc.getPnom());
+	       					fc.setParcours(pc);
+	       					fc.setSexe(pc.getSexe());
+	       					fc.setPromofrag(pfg);
+	       					fc.setPromo_name(pc.getPromo_name());
+	       					fc = fpDao.save(fc);
+	       				   return ResponseEntity.ok(new JwtResponse<Parcours>(false, null, "parcours par fragment"));
+	       		        } else {
+		 				   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous avez déjà ajouté cet(te) etudiant en reprise"));
+		 		      }
+	       		
+	 			  } else {
+	 				   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	 		      }
+	       	}
+	        
+	        @RequestMapping(value = "/api/getStudentForReprise/{id}")
+	       	public ResponseEntity<?> getStudentForReprise(Authentication auth, @PathVariable("id") Long id) {
+	        	 UserEntity  utt = getUser(auth);
+	 			 
+	 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	        	        List<MoyDto> ps = rDao.getEtudiantsToFR(id);
+	        	        return ResponseEntity.ok(new JwtResponse<List<MoyDto>>(false,ps,"Etudiants en reprise")); 
+	 			   }
+	       		
+	 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	       	}
+	        
+	        
+	        @RequestMapping(value = "/api/getResultatAfterRep/{id}")
+	       	public ResponseEntity<?> getResultatAfterRep(Authentication auth, @PathVariable("id") Long id) {
+	        	   UserEntity  utt = getUser(auth);
+	 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	        	        List<MoyDto> ps = rDao.getEtudiantsToFR(id);
+	        	        for(int i=0; i<ps.size();i++) {
+	        	        	//System.out.print(ps.get(i).getNote()+"<=====================|"+ps.get(i).getNom()+" "+ps.get(i).getPnom()+"|=====================>"+ps.get(i).getTotal()+"\n");
+	        	        	MoyDto nr = rDao.getMoyenAfterRep(id,ps.get(i).getIdp());
+	        	        	if(nr!=null) {
+	        	        	// System.out.print(nr.getNote()+"<=====================|"+nr.getNom()+" "+nr.getPnom()+"|=====================>"+nr.getTotal()+"\n");
+	        	        	 ps.get(i).setNote_ar(nr.getNote());
+	        	        	 ps.get(i).setTotal_ar(nr.getTotal());
+	        	        	} else {
+	        	        		ps.get(i).setNote_ar(0);
+	        	        	    ps.get(i).setTotal_ar(0);
+	        	        	}
+	        	        }
+	        	        return ResponseEntity.ok(new JwtResponse<List<MoyDto>>(false,ps,"Resultats des etudiants en reprise")); 
+	 			   }
+	       		
+	 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	       	}
+	        
+	        @RequestMapping(value = "/api/getRepCond/{id}")
+	       	public ResponseEntity<?> getRepCond(Authentication auth, @PathVariable("id") Long id) {
+	        	   UserEntity  utt = getUser(auth);
+	 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	        	        Integer pf = promo.findById(id).get().getPromo_af().getType_reprise();
+	        	        return ResponseEntity.ok(new JwtResponse<Integer>(false,pf,"Type reprise")); 
+	 			   }
+	 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	       	}
+	        
+	           @Modifying
+	 	       @Transactional
+	 	       @RequestMapping(value = "/api/setMoyenGenAR/{id}")
+	 		   public ResponseEntity<?>  setMoyenGenAF (Authentication auth,@PathVariable("id") Long id) {
+	 	    	 UserEntity  utt = getUser(auth);
+	 			 
+	 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+	 				   Integer pf = promo.findById(id).get().getPromo_af().getType_reprise();
+	 				   List<MoyDto> ps = rDao.getEtudiantsToFR(id);
+	 				   for(int i=0; i<ps.size();i++) {
+	        	        	MoyDto nr = rDao.getMoyenAfterRep(id,ps.get(i).getIdp());
+	        	        	if(nr!=null) {
+	        	             ps.get(i).setNote_ar(nr.getNote());
+	        	        	 ps.get(i).setTotal_ar(nr.getTotal());
+	        	        	} else {
+	        	        		ps.get(i).setNote_ar(0);
+	        	        	    ps.get(i).setTotal_ar(0);
+	        	        	}
+	        	        }
+	 				  for(MoyDto o : ps) {
+	 					  double moy =0;
+	 					  if(o.getNote_ar()==0) {
+	                         moy = (o.getNote()/o.getTotal())*o.getMoy_total();
+	 					   }else {
+	 						double  ma = (o.getNote()/o.getTotal())*o.getMoy_total();
+	 						double  mb = (o.getNote_ar()/o.getTotal_ar())*o.getMoy_total();
+	 						if(pf==1) {
+	 							moy = mb;
+	 						}else if(pf==2) {
+	 							if(ma+mb>0) {
+	 							 moy = (ma+mb)/2;
+	 							} else {
+	 							   moy = (o.getNote()/o.getTotal())*o.getMoy_total();
+	 							}
+	 						}
+	 					  }
+	                      moy = round(moy, 2);
+	                      Integer dec = 3;
+	                      if(moy!=0.0) {
+	                      if(moy>=o.getMoy_accept()) {
+	                    	  dec = 1;
+	                      }else if(moy>= o.getMoy_rep() && moy<o.getMoy_accept()) {
+	                    	  dec=2;
+	                      } 
+	                      pars.setDec(o.getIdp(), dec, moy);
+	                      }else { pars.setDec(o.getIdp(), dec,0); continue;}
+					   }
+	 				   return ResponseEntity.ok(new JwtResponse<String>(false,"","Etudiants finissants")); 
+	 			   } else {
+	 				   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	 		      }
+	 			   
+	 		  }
+	           
+	           
+	            @RequestMapping(value = "/api/getDecisionFinale/{id}")
+		       	public ResponseEntity<?> getDecisionFinale(Authentication auth,  @PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+		 				    //System.out.print(id);
+		        	        List<User> users = pars.getDecisionFinale(id);
+		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Decision finale")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+       
        
        
 
