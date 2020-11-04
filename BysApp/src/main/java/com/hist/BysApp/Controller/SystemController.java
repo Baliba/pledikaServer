@@ -94,6 +94,7 @@ import com.hist.BysApp.projection.CourseView;
 import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
+import Palmares.Etudiant;
 import Palmares.MResults;
 import dto.User;
 import models.MParcours;
@@ -521,6 +522,17 @@ public class SystemController {
 		 				    //System.out.print(id);
 		        	        List<User> users = pars.getDecisionFinale(id);
 		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Decision finale")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            
+	            @RequestMapping(value = "/api/getAllParcoursByPromo/{id}")
+		       	public ResponseEntity<?> getAllParcoursByPromo(Authentication auth,  @PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
+		        	        List<Etudiant> users = fpDao.getEtudiants(id);
+		        	        return ResponseEntity.ok(new JwtResponse<List<Etudiant>>(false,users,"Parcours")); 
 		 			   }
 		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
 		       	}

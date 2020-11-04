@@ -35,6 +35,15 @@ public class Etudiant {
 		this.code = code;
 		this.date_naiss = date_naiss;
 	}
+	String sexe ; 
+	public Etudiant(Long id, String nom, String pnom,String code,String s) {
+		super();
+		this.id = id;
+		this.nom = nom;
+		this.pnom = pnom;
+		this.code = code;
+		sexe=s;
+	}
 	
 	
 
