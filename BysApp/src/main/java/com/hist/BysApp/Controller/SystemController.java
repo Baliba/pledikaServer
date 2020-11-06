@@ -96,6 +96,7 @@ import com.hist.BysApp.service.JwtUserDetailsService;
 
 import Palmares.Etudiant;
 import Palmares.MResults;
+import dto.Log;
 import dto.User;
 import models.MParcours;
 
@@ -523,11 +524,10 @@ public class SystemController {
 		        	        List<User> users = pars.getDecisionFinale(id);
 		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Decision finale")); 
 		 			   }
-		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		 			  return ResponseEntity.ok(new JwtResponse<String>(true,null,"Vous n'etes pas autorisé"));
 		       	}
 	            
-	            
-	            
+	           
 	            
 	            @RequestMapping(value = "/api/getAllParcoursByPromo/{id}")
 		       	public ResponseEntity<?> getAllParcoursByPromo(Authentication auth,  @PathVariable("id") Long id) {
@@ -717,9 +717,83 @@ public class SystemController {
 	        	}
 	            
 	            
-	       
+	            @Transactional
+	        	@RequestMapping(value = "/api/initPversement", method = RequestMethod.POST)
+	        	public ResponseEntity<?> addStudentToPromo(Authentication auth, @RequestBody ParcoursRequest u) {
+	            	 UserEntity  utt = getUser(auth);
+	            	 if( utt.getRole().getName().equals(RoleName.MASTER)) {
+	            	        Long idp = u.getId_student();
+	        				Parcours p = pars.getOneParcours(idp);
+                            UserEntity nu = p.getUser();
+	        				p.setOption_paiement(u.getId_opaie());
+	        				// create list versement for parcours
+	        				List<PVersement> pv =  new ArrayList<PVersement>();
+	        				List<PVersement> ppv = new ArrayList<PVersement>();
+	        				Long codep = u.getId_opaie();
+	        				Optional<CycleOPaie> cop = this.cop.findById(codep);
+	        				Collection<CycleVersement> cvs = cop.get().getCversement();
+	        				for (CycleVersement cv : cvs) {
+	        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
+	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+	        					}
+	        				}
+	        				for (CycleVersement cv : cvs) {
+	        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
+	        					PVersement npv = new PVersement();
+	        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
+	        					npv.setJour_limit(cv.getJour_limit());
+	        					npv.setMois_limit(cv.getMois_limit());
+	        					npv.setMontant_pay((double) 0);
+	        					npv.setCode(cv.getCode());
+	        					npv.setActived(true);
+	        					npv.setCode_share(cv.getCode());
+	        					npv.setType_verse(cv.getType_verse());
+	        					npv.setPos(cv.getPos());
+	        					if (cv.getMontant() > 0) {
+	        						if (nu.getGranted() == 0) {
+	        							npv.setMontant_to_pay(cv.getMontant());
+	        							npv.setMontant_init((double) 0);
+	        						} else if (nu.getGranted() == 1) {
+	        							npv.setMontant_to_pay((double) 0);
+	        							npv.setMontant_init(cv.getMontant());
+	        						} else {
+	        							npv.setMontant_to_pay(cv.getMontant() / 2);
+	        							npv.setMontant_init(cv.getMontant()/2);
+	        						}
+	        						pv.add(npv);
+	        					} else {
+	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+	        					}
+	        				 }
+	        				}
 
-       
+	                     if(pv.size()<=0) { return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle",true)); }
+	        					p = pars.save(p);
+	        					for (PVersement npv : pv) {
+	        						 PVersement sv =  pvd.findByName(npv.getName());
+
+	        						 if (sv == null) {
+	        							npv.setParcours(p);
+	        							ppv.add(pvd.save(npv));
+	        						}
+	        						// Log.Log(sv.getName()+"|"+sv.getId());
+	        				}
+	        	     return ResponseEntity.ok(new JwtResponse<List<PVersement>>(false, ppv, ppv.size()+" versement(s) ajouté(s)"));
+	            	 } else {  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé")); }
+	        	}
+	            
+	            
+	            @RequestMapping(value = "/api/delVerse/{id}")
+		       	public ResponseEntity<?> delVerse(Authentication auth,  @PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER)) {
+		 				    pvd.deleteById(id);
+		        	        return ResponseEntity.ok(new JwtResponse<String>(false,"","Succès")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	      
    
 
 }

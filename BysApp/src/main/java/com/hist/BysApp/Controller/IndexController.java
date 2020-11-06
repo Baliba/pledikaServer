@@ -731,6 +731,9 @@ public class IndexController {
 		   UserEntity  utt = getUser(auth);
 		   Etablissement e = etabDao.findAll().get(0);
 		   String code = e.getCode_philo();
+		   if(code==null) {
+			   return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous devez configurer la classe terminale dans la configuration de l'etablissement"));
+		   }
 		   Promo_af p = pafDao.getActived();
 		   if( (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER) )) {
 			   List<MoyDto> ps = rDao.getEtudiantsToOver(p.getId(), code);
