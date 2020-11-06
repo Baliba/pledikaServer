@@ -83,6 +83,32 @@ public class User implements Serializable {
 		this.annee_philo = annee_philo;
 	}
 	
+	boolean actived;
+	public User(Long id, String code, String sexe, String lastName, String firstName, String classe, String role,boolean checkbox, int bourse, Long idu, double moy_pass, Date date_naiss,String lieu_de_naiss,String matricule, String identifiant, String nom_mere, String annee_six, String annee_neuv,String annee_rheto, String annee_philo,boolean act) {
+		super();
+		this.id = id;
+		this.code = code;
+		this.sexe = sexe;
+		this.lastName = lastName;
+		this.firstName = firstName;
+		this.classe = classe;
+		this.role = role;
+		this.checkbox = checkbox;
+		this.bourse = bourse;
+		this.idu = idu;
+		this.moy_pass = moy_pass;
+		this.date_naiss = date_naiss;
+		this.lieu_de_naiss = lieu_de_naiss;
+		this.matricule = matricule;
+		this.identifiant = identifiant;
+		this.nom_mere = nom_mere;
+		this.annee_six = annee_six;
+		this.annee_neuv = annee_neuv;
+		this.annee_rheto = annee_rheto;
+		this.annee_philo = annee_philo;
+		actived = act;
+	}
+	
 	
 	
 	

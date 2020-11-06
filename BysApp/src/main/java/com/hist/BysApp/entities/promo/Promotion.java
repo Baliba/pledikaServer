@@ -101,7 +101,8 @@ public class Promotion extends cObj implements Serializable {
     
     @Column(columnDefinition="boolean default false")
     private boolean reprise;
-    @Column(columnDefinition=" integer default 25 ")
+    
+    @Column(columnDefinition="integer default 25")
     private int max_cours;
     
     @Column(columnDefinition="boolean default false")

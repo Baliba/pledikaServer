@@ -34,6 +34,22 @@ public class PromoDto {
 		this.reprise = reprise;
 	}
     
+    public PromoDto(Long id, String code, String code_niveau, boolean reprise, Long prev_promo,
+    		String prev_promo_name,String code_cycle, double moy_accept,  int moy_total, Long np,String npn) {
+		super();
+		this.id = id;
+		this.code = code;
+		this.code_niveau = code_niveau;
+		this.reprise = reprise;
+		this.prev_promo=prev_promo;
+		this.prev_promo_name = prev_promo_name;
+		this.code_cycle = code_cycle;
+		this.moy_accept = moy_accept;
+		this.moy_total = moy_total;
+		this.next_promo= np;
+		this.next_promo_name = npn;
+	}
+    
     public PromoDto(Long id, String code, String code_niveau, boolean reprise, Long prev_promo, String prev_promo_name,String code_cycle, double moy_accept,  int moy_total) {
 		super();
 		this.id = id;

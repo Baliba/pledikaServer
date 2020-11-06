@@ -775,19 +775,14 @@ public class AppController {
 					fc.setNote_pass(pc.getNote_pass());
 					fc.setNote_excel(pc.getNote_excel());
 					fc = fcDao.save(fc);
-					HCours hc = new HCours();
-					hc.setJours(pc.getJours());
-					hc.setHeure_cours(pc.getHeure_cours());
-					hc.setFrag_cours(fc);
-					hc.setCode(pc.getJours() + "-" + pc.getHeure_cours() + "-" + pf.getId());
-					hc = hcDao.save(hc);
-					fc.setAHcours(hc);
 					fcs.add(fc);
 				}
 			}
+			
+			return ResponseEntity.ok(new JwtResponse<List<Frag_cours>>(false, fcs, " Succès "));
 		}
 
-		return ResponseEntity.ok(new JwtResponse<List<Frag_cours>>(true, fcs, " Taille: " + pcs.size()));
+		return ResponseEntity.ok(new JwtResponse<List<Frag_cours>>(true, fcs, " il y a 0 cours dans cette promotion "));
 
 	}
 

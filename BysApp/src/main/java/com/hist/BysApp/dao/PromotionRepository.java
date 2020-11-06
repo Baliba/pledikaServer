@@ -33,7 +33,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE p.id!=:idp AND enabled=true AND  p.niveau_rel.niveau.code=:id")
 	 List<PromoDto> getPromo(@Param("idp") Long idp,@Param("id") String id);
 	 
-	 @Query("SELECT new com.hist.BysApp.model.PromoDto(p.id,p.code,p.code_niveau,p.reprise,p.prev_promo,p.prev_promo_name,p.code_cycle,p.moy_accept, p.moy_total) FROM Promotion p WHERE p.promo_af.id=:id ORDER BY p.code ASC ")
+	 @Query("SELECT new com.hist.BysApp.model.PromoDto(p.id,p.code,p.code_niveau,p.reprise,p.prev_promo,p.prev_promo_name,p.code_cycle,p.moy_accept, p.moy_total, p.next_promo, p.next_promo_name) FROM Promotion p WHERE p.promo_af.id=:id ORDER BY p.code ASC ")
 	 List<PromoDto> getPromoByAF(@Param("id") Long id);
 	 
 	 @Query("SELECT new com.hist.BysApp.model.PromoDto(p.id,p.code,p.code_niveau,p.reprise) FROM Promotion p WHERE p.promo_af.id=:id AND p.niveau_rel.id=:nr ORDER BY p.code ASC  ")
@@ -44,8 +44,12 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 
 	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE p.id!=:id  AND  p.niveau_rel.niveau.code=:code AND p.promo_af.id=:py AND p.next_promo IS NULL  ")
 	 List<PromoDto> getPrevPromo(@Param("py") Long prev_year,@Param("id") Long id, @Param("code") String code);
+	 
+	 @Query("SELECT  p FROM Promotion p WHERE  enabled=true AND  p.niveau_rel.id=:idn AND p.promo_af.id=:id ")
+	 Promotion getSamePromo(@Param("id") Long id, @Param("idn") Long idn);
 	
 	 
 	 @Query("SELECT p.promo_af.next_year FROM Promotion p Where p.id=:id ")
 	 Long getAFByPromo(@Param("id") Long id);
+	 
 }
