@@ -40,6 +40,7 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	@Query("SELECT p FROM Parcours p where p.promotion.id=:id ORDER BY p.nom ASC")
     List<Parcours> getParcours(@Param("id") Long id); 
 	
+	
 	@Query("SELECT p FROM Parcours p where p.promotion.id=:id AND p.id=:idu ORDER BY p.nom ASC")
     List<Parcours> getOParcours(@Param("id") Long id, @Param("idu") Long idu); 
 	
