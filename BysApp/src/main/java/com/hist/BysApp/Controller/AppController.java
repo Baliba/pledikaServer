@@ -94,6 +94,7 @@ import com.hist.BysApp.service.JwtUserDetailsService;
 
 import Palmares.NResults;
 import dto.DCours;
+import dto.User;
 import models.MUser;
 
 @Controller
@@ -984,6 +985,23 @@ public class AppController {
 		return ResponseEntity.ok(new JwtResponse<List<UserEntity>>(true, u, "Student"));
 	}
 	
+	
+	@RequestMapping(value = "/api/getStudentForPromoV6/{id}")
+	public ResponseEntity<?> getStudentForPromoV6(@PathVariable("id") Long id) {
+		List<Parcours> p = pDao.getActParcours(id);
+		java.util.List<String> ids = new ArrayList<>();
+		for (Parcours cn : p) {
+			ids.add(cn.getCode_student());
+		}
+		List<User> u;
+		if (ids.size() > 0) {
+			u = user.getStudentForPromoV6(ids);
+		} else {
+			u = user.getStudentForPromoV6();
+		}
+		return ResponseEntity.ok(new JwtResponse<List<User>>(true, u, "Student"));
+	}
+	 
 	@RequestMapping(value = "/api/getStudentForPromoV3/{id}")
 	public ResponseEntity<?> getStudentForPromoV3(@PathVariable("id") Long id) {
 		Promotion prom = promo.findById(id).get();

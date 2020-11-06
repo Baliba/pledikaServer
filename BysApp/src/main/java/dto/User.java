@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.hist.BysApp.entities.Location.Ville;
 import com.hist.BysApp.entities.member.UserEntity;
+import com.hist.BysApp.entities.paiement.PVersement;
 
 import lombok.Data;
 
@@ -84,6 +85,7 @@ public class User implements Serializable {
 	}
 	
 	boolean actived;
+	PVersement pversement;
 	public User(Long id, String code, String sexe, String lastName, String firstName, String classe, String role,boolean checkbox, int bourse, Long idu, double moy_pass, Date date_naiss,String lieu_de_naiss,String matricule, String identifiant, String nom_mere, String annee_six, String annee_neuv,String annee_rheto, String annee_philo,boolean act) {
 		super();
 		this.id = id;

@@ -65,6 +65,12 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
      @Query("SELECT u FROM UserEntity AS u JOIN u.role  r WHERE  r.name='STUDENT' AND u.enabled=true AND u.lover=false AND exclude = false  ")
      List<UserEntity> getStudentForPromoV2();
      
+     @Query("SELECT new dto.User(u.id, u.code,u.sexe, u.lastName,u.firstName, u.current_class.name, r.name, true) fROM UserEntity AS u JOIN  u.role  r  WHERE  u.exclude=:e  AND u.code NOT IN (:code) ") 
+     List<User> getStudentForPromoV6(@Param("code") List<String> code); 
+     
+     @Query("SELECT new dto.User(u.id, u.code,u.sexe, u.lastName,u.firstName, u.current_class.name, r.name, true) fROM UserEntity AS u JOIN  u.role  r  WHERE  u.exclude=:e  ") 
+  	 List<User> getStudentForPromoV6();
+     
      
      @Query("SELECT u FROM UserEntity AS u JOIN u.role r WHERE r.name='STUDENT'  AND u.enabled=true  AND u.code NOT IN (:code) AND u.lover=false AND u.current_class.code = :classe AND u.current_promo IS NULL AND exclude = false ")
      List<UserEntity> getStudentForPromoV3(@Param("code") List<String> code, @Param("classe") String classe);
