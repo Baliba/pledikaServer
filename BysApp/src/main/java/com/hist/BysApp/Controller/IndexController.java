@@ -112,6 +112,8 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 import com.hist.BysApp.service.NotService;
 
+import dto.User;
+
 @Controller 
 public class IndexController {
 	@Autowired 
@@ -898,9 +900,8 @@ public class IndexController {
 	   @RequestMapping(value = "/api/getAllStudent")
 	   public ResponseEntity<?> getAllStudent() {
 		       Promo_af pf= pafDao.getActived();
-		      // List<ASDto> asd = promo.getAllParcours(pf.getId());
-		       List<Parcours> asd = pars.getAllParcours(pf.getId());
-		       return ResponseEntity.ok(new JwtResponse<List<Parcours>>(false,asd,"Listes des etudiants par promotion")); 
+		       List<User> asd = pars.getAllParcoursU(pf.getId());
+		       return ResponseEntity.ok(new JwtResponse<List<User>>(false,asd,"Listes des etudiants par promotion")); 
 	   }
 	   
 	   @RequestMapping(value = "/api/getSexeStat")
