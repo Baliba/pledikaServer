@@ -480,6 +480,14 @@ public class BulletinController {
     			return ResponseEntity.ok(new JwtResponse<List<MParcours>>(false,ps, ""));
         }
         
+        @Modifying
+     	@Transactional
+        @RequestMapping(value = "/api/deleteResult/{c}")
+  		public ResponseEntity<?> deleteResult (Authentication auth,  @PathVariable("c") Long c) {
+        	    this.rDao.deleteResult(c);
+    			return ResponseEntity.ok(new JwtResponse<List<MParcours>>(false,null, "Resultat effacés avec succès"));
+        }
+        
         
         
 }

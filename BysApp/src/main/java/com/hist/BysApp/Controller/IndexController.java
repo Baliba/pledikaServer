@@ -951,6 +951,7 @@ public class IndexController {
 		   if(pcs.size()>0) {
 		   for(Parcours_frag p :pcs) {
 			   for(Frag_cours fc :fcs) {
+				   if(fc.isExamen()) {
 				    String code = p.getId() + "-" + fc.getId();
 					Results fct = rDao.findByCode(code);
 					if (fct == null) {
@@ -968,8 +969,8 @@ public class IndexController {
 						r.setCoef(fc.getCoef());
 						r.setNote(0f);
 						rDao.save(r);
-					} 
-				  
+					 } 
+				   }
 			   }
 		    }
 		   } else { return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"aucun  etudiant affecté.")); }
