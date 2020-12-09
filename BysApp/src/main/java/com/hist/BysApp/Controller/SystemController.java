@@ -88,6 +88,7 @@ import com.hist.BysApp.entities.promo.Promotion;
 import com.hist.BysApp.entities.promo.Results;
 import com.hist.BysApp.factories.Helper;
 import com.hist.BysApp.model.MoyDto;
+import com.hist.BysApp.model.PromoDto;
 import com.hist.BysApp.model.VilleAndDoc;
 import com.hist.BysApp.model.VilleAndNiveau;
 import com.hist.BysApp.projection.CourseView;
@@ -792,6 +793,13 @@ public class SystemController {
 		 			   }
 		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
 		       	}
+	            
+	            @RequestMapping(value = "/api/getPromoByCode/{code}")
+		       	public ResponseEntity<?> getPromoByCode(Authentication auth,  @PathVariable("code") String code) {
+	            	 PromoDto  p = promo.getPromoByCode(code);
+		 			 return ResponseEntity.ok(new JwtResponse<PromoDto>(false,p,"Promotion encours"));
+		       	}
+	            
 	            
 	      
    

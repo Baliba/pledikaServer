@@ -25,9 +25,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 @Data
 public class cObj {
-            @Temporal(TemporalType.TIMESTAMP)
-            @Column(nullable = false, updatable = false)
-       @CreationTimestamp    
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(nullable = false, updatable = false)
+        @CreationTimestamp    
 	    private Date created_at;
 
 	    @Temporal(TemporalType.TIMESTAMP)
@@ -40,4 +40,7 @@ public class cObj {
 	    private Long rowScn;
 	    @Column(nullable = false, columnDefinition=" boolean default false ")
 	    private boolean checkbox;
+	    
+	    @Column(nullable = false, columnDefinition=" boolean default false ")
+	    private boolean del;
 }

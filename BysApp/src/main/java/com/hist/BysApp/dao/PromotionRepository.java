@@ -52,4 +52,7 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 @Query("SELECT p.promo_af.next_year FROM Promotion p Where p.id=:id ")
 	 Long getAFByPromo(@Param("id") Long id);
 	 
+	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE enabled=true AND  p.code=:code")
+	 PromoDto getPromoByCode(@Param("code") String code);
+	 
 }
