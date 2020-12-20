@@ -135,6 +135,8 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     @NotFound(action = NotFoundAction.IGNORE)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Ville lieu_de_naiss;
+    
+    
     private String   pob;
     
     @OneToOne
@@ -143,13 +145,15 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties({"user","promotion","parcours_frag"}) 
-    @Column(nullable = true)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Collection<Parcours> parcours;
     
     @OneToMany(mappedBy = "titulaire")
     @JsonIgnoreProperties({"titulaire","niveau_rel","promo_af","parcours","promofrag","promo_cours"}) 
     @NotFound(action = NotFoundAction.IGNORE)
     private Collection<Promotion> promotion;
+    
+    
     private String bank_account_HTG;
     private String bank_account_USD;
     private double salairy;
