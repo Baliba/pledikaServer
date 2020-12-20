@@ -13,6 +13,9 @@ import com.hist.BysApp.component.JwtToken;
 import com.hist.BysApp.dao.UserRepository;
 import com.hist.BysApp.entities.member.UserEntity;
 import com.hist.BysApp.service.JwtUserDetailsService;
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,6 +65,9 @@ public class AuthController {
             u = jwtUserDetailsService.getUserInfo(username);
             u.setToken(jwtToken.generateToken(user));
             error =false;
+        }
+        if (u.getParcours()==null) {
+        	u.setParcours(Arrays.asList());
         }
         return ResponseEntity.ok(new JwtResponse<UserEntity>(error, u,"Success"));
     }
