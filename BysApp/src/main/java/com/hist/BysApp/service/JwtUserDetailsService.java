@@ -112,7 +112,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     	Etablissement e= etab.findAll().get(0);
        for( GrantedAuthority role:auth) {
     	    r = role.getAuthority();
-    	break;
+    	    break;
        }
        if( (!e.isTeacher() && r.equals(RoleName.PROF)) || (!e.isStudent() && r.equals(RoleName.STUDENT))) {
     	   return false;

@@ -15,9 +15,7 @@ public class Etablissement extends cObj  implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String code; 
-   
     private String logo;
-    
     @Column(unique=true)
     private String background;
     private String name;
@@ -151,5 +149,8 @@ public class Etablissement extends cObj  implements Serializable {
     private boolean bulletin;
     
     private String code_six, code_neuv, code_rheto, code_philo;
+    
+    @Column(nullable = true, columnDefinition=" varchar default 'https://pledika.com/' ")
+    private String backend;
     
 }

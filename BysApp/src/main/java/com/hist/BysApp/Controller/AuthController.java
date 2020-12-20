@@ -61,7 +61,6 @@ public class AuthController {
         if(jwtUserDetailsService.autoLogin(user, username, password)){
             u = jwtUserDetailsService.getUserInfo(username);
             u.setToken(jwtToken.generateToken(user));
-            
             error =false;
         }
         return ResponseEntity.ok(new JwtResponse<UserEntity>(error, u,"Success"));
