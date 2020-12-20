@@ -136,12 +136,14 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Ville lieu_de_naiss;
     private String   pob;
+    
     @OneToOne
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private  PaiementAdmission paiement_admission;
     
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties({"user","promotion","parcours_frag"}) 
+    @Column(nullable = true)
     private Collection<Parcours> parcours;
     
     @OneToMany(mappedBy = "titulaire")
