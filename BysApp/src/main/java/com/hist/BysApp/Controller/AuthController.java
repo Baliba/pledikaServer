@@ -66,10 +66,6 @@ public class AuthController {
             u.setToken(jwtToken.generateToken(user));
             error =false;
         }
-        if (u.getParcours() == null) {
-        	u.setParcours(Arrays.asList());
-        }
-        System.out.print("#-------| "+u.getLastName()+" "+u.getFirstName()+" |---------#");
         return ResponseEntity.ok(new JwtResponse<UserEntity>(error, u,"Success"));
     }
      
