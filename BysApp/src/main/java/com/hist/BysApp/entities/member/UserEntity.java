@@ -144,12 +144,12 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     private  PaiementAdmission paiement_admission;
     
     @OneToMany(mappedBy = "user")
-    @JsonIgnoreProperties({"user","promotion","parcours_frag"}) 
+    @JsonIgnoreProperties(value={"user","promotion","parcours_frag"}) 
     @NotFound(action = NotFoundAction.IGNORE)
-    private Collection<Parcours> parcours;
+    private Set<Parcours> parcours;
     
     @OneToMany(mappedBy = "titulaire")
-    @JsonIgnoreProperties({"titulaire","niveau_rel","promo_af","parcours","promofrag","promo_cours"}) 
+    @JsonIgnoreProperties(value = {"titulaire","niveau_rel","promo_af","parcours","promofrag","promo_cours"})
     @NotFound(action = NotFoundAction.IGNORE)
     private Collection<Promotion> promotion;
     
