@@ -244,6 +244,9 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         createRoleIfNotFound(RoleName.PROF);
         createRoleIfNotFound(RoleName.MANAGER);
         createRoleIfNotFound(RoleName.TEST);
+        createRoleIfNotFound(RoleName.MASTER_P);
+        createRoleIfNotFound(RoleName.ADMIN_P);
+        createRoleIfNotFound(RoleName.MANAGER_P);
         // setUp option de paiement
                 
         OPaie op_1 = this.setOPaie("Option 1","O1");

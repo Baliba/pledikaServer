@@ -18,4 +18,7 @@ public class RoleName {
      public static String  ACCOUNTING="ACCOUNTING";
      public static String  TEST      ="TEST";
      public static String  PARENT    ="PARENT";
+     public static String  MASTER_P    ="MASTER_P";
+     public static String  ADMIN_P    ="ADMIN_P";
+     public static String  MANAGER_P  ="MANAGER_P";
 }

@@ -165,17 +165,29 @@ public class BackdoorController {
 	@Autowired
 	PRFragDao   prfDao;
 	
-	  public UserEntity  getUser (Authentication authentication){
+	private String token = "fasfyyAh129999sdg7fsafeGSGgjajhha127SHHwetyHwihd828yudbzbBbdavh378bsdbfjfhdf8834rbbdfmsdfn78";
+	
+	public UserEntity  getUser (Authentication authentication){
 		   UserDetails me = (UserDetails) authentication.getPrincipal();
 	       return  this.UserDetails.getUserInfo(me.getUsername());
 	   }
 	  
-	  public  String  now() {
+	public  String  now() {
 	        Date date = new Date();
 	        String strDateFormat = "hh:mm:ss a";
 	        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
 	        String formattedDate = dateFormat.format(date);
 	        return formattedDate.trim();
-	   }
+	  }
+	  
+	  @RequestMapping(value = "/api/checkDomain/{token}")
+	  public ResponseEntity<?> checkDomain(@PathVariable("token") String token) {
+		if(token==this.token) {    
+		 return ResponseEntity.ok(new JwtResponse<Boolean>(false,true, "Succès"));
+		  }else {
+		 return ResponseEntity.ok(new JwtResponse<Boolean>(false,false, "Non authorisé"));
+		}
+	  }
+
 
 }
