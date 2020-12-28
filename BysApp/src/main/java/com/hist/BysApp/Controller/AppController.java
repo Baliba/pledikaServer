@@ -1184,6 +1184,7 @@ public class AppController {
 
 		return ResponseEntity.ok(new JwtResponse<UserEntity>(true, null, "Deconnection"));
 	}
+	
 
 	@RequestMapping(value = "/api/getPersonnel")
 	public ResponseEntity<?> getPersonnel() {

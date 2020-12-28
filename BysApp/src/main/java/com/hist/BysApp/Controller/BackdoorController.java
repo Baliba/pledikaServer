@@ -182,7 +182,7 @@ public class BackdoorController {
 	  
 	  @RequestMapping(value = "/api/backdoor/checkDomain/{token}")
 	  public ResponseEntity<?> checkDomain(@PathVariable("token") String token) {
-		if(token==this.token) {    
+		if(token.equals(this.token)) {    
 		   return ResponseEntity.ok(new JwtResponse<Boolean>(false,true, "Succès"));
 		  } else {
 		   return ResponseEntity.ok(new JwtResponse<Boolean>(false,false, "Non authorisé"));
