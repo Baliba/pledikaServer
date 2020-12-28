@@ -180,12 +180,12 @@ public class BackdoorController {
 	        return formattedDate.trim();
 	  }
 	  
-	  @RequestMapping(value = "/api/checkDomain/{token}")
+	  @RequestMapping(value = "/api/backdoor/checkDomain/{token}")
 	  public ResponseEntity<?> checkDomain(@PathVariable("token") String token) {
 		if(token==this.token) {    
-		 return ResponseEntity.ok(new JwtResponse<Boolean>(false,true, "Succès"));
-		  }else {
-		 return ResponseEntity.ok(new JwtResponse<Boolean>(false,false, "Non authorisé"));
+		   return ResponseEntity.ok(new JwtResponse<Boolean>(false,true, "Succès"));
+		  } else {
+		   return ResponseEntity.ok(new JwtResponse<Boolean>(false,false, "Non authorisé"));
 		}
 	  }
 
