@@ -22,6 +22,7 @@ import com.hist.BysApp.entities.member.UserEntity;
 
 import dto.User;
 import models.MUser;
+import models.Parent;
 
 /**
  *
@@ -154,4 +155,31 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
  	 @Transactional
  	 @Query("UPDATE UserEntity AS p SET p.lover=:pn WHERE p.id=:id")
 	 void setLover(@Param("id")  Long id ,@Param("pn") boolean s);
+     
+     @Query("SELECT  new models.Parent(u.id, u.code, u.lastName, u.firstName, u.sexe, u.date_de_naiss, u.username, u.enabled, u.phone, u.adresse) fROM UserEntity AS u JOIN  u.role  r  WHERE  r.name=:role   AND  u.lover=false ") 
+	 List<Parent> getParent(@Param("role")  String role);
+     
+     @Query("SELECT new dto.User(u.id, u.code,u.sexe, u.lastName,u.firstName, u.current_class.name, r.name, true, u.granted) fROM UserEntity AS u JOIN  u.role  r WHERE r.name = 'STUDENT' AND  u.lover=false  AND r.name != 'MASTER' ") 
+	 List<User> getUserForDel();
+     
+     @Query("SELECT new dto.User(u.id, u.code,u.sexe, u.lastName,u.firstName,'', r.name, true, u.granted) fROM UserEntity AS u JOIN  u.role  r WHERE r.name != 'STUDENT' AND r.name != 'MASTER' ") 
+	 List<User> getOUserForDel();
+     
+     @Query("SELECT new dto.User(u.id, u.code,u.sexe, u.lastName,u.firstName, u.current_class.name, r.name, true, u.granted) fROM UserEntity AS u JOIN  u.role  r  WHERE  (u.mere_id=:id OR u.pere_id=:id )   ") 
+	 List<User> getStudentForParent(@Param("id")  Long id);
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.pin=:pn WHERE p.id=:id")
+  	 void setPin(@Param("pn")  int pin ,@Param("id")  Long id );
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.pere_id=:id WHERE p.code=:code AND p.pin=:pn")
+  	 boolean setLPP(@Param("pn")  int pin ,@Param("id")  Long id , @Param("id")  String code);
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.mere_id=:id WHERE p.code=:code AND p.pin=:pn")
+  	 boolean setLPM(@Param("pn") int pin ,@Param("id")  Long id , @Param("id")  String code);
 }

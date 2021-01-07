@@ -96,6 +96,7 @@ import Palmares.NResults;
 import dto.DCours;
 import dto.User;
 import models.MUser;
+import models.Parent;
 
 @Controller
 public class AppController {
@@ -550,6 +551,51 @@ public class AppController {
 			ut.setEnabled(u.isEnabled());
 			ut = user.save(ut);
 			return ResponseEntity.ok(new JwtResponse<UserEntity>(false, ut, "Personnel ajouté avec succès"));
+		} else {
+
+			return ResponseEntity
+					.ok(new JwtResponse<UserEntity>(true, null, "Vous n'etes pas autorisé a ajouter un enseignants"));
+		}
+
+	}
+	
+	@RequestMapping(value = "/api/addNParent", method = RequestMethod.POST)
+	public ResponseEntity<?> addNParent(@RequestBody RegisterRequest u, Authentication authentication)
+			throws Exception {
+		UserDetails me = (UserDetails) authentication.getPrincipal();
+
+		UserEntity cu = this.UserDetails.getUserInfo(me.getUsername());
+
+		if (cu.getRole().getName().equals(RoleName.ADMIN) || cu.getRole().getName().equals(RoleName.MANAGER)
+				|| cu.getRole().getName().equals(RoleName.MASTER)) {
+
+			String email = u.getUsername();
+			Long nu = user.count();
+
+			if (user.existsByUsername(email)) {
+				return ResponseEntity.ok(new ErrorResponse("Email existe déjà ", true));
+			}
+
+			String password = "parent@12345";
+			String encodedPassword = new BCryptPasswordEncoder().encode(password);
+			String fname = u.getFname(); // 1
+			String lname = u.getLname(); // 2
+			UserEntity ut = new UserEntity(email, encodedPassword, fname, lname);
+			ut.setPhone(u.getPhone());
+			ut.setAdresse(u.getAdresse());
+			Role r;
+			r = role.findById(u.getRole()).get();
+			ut.setRole(r);
+			ut.setCode("PA-" + Helper.generateCode(fname, lname, nu));
+            // ut.setSalairy(u.getSalairy());
+            ut.setFonction(u.getFonction());
+			ut.setSexe(u.getSexe());
+			ut.setDate_de_naiss(u.getDate_de_naiss());
+			ut.setCreated_by(cu.getId());
+			ut.setAvatar("default.png");
+			ut.setEnabled(u.isEnabled());
+			ut = user.save(ut);
+			return ResponseEntity.ok(new JwtResponse<UserEntity>(false, ut, "Parent ajouté avec succès"));
 		} else {
 
 			return ResponseEntity
@@ -1190,6 +1236,12 @@ public class AppController {
 	public ResponseEntity<?> getPersonnel() {
 		List<UserEntity> users = user.getUsers();
 		return ResponseEntity.ok(new JwtResponse<List<UserEntity>>(true, users, "Liste des personnels"));
+	}
+	
+	@RequestMapping(value = "/api/getParent")
+	public ResponseEntity<?> getParent() {
+		List<Parent> users = user.getParent(RoleName.PARENT);
+		return ResponseEntity.ok(new JwtResponse<List<Parent>>(false, users, "Liste des parents"));
 	}
 	
 	@RequestMapping(value = "/api/getUserV2/{role}")

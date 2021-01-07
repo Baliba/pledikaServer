@@ -800,6 +800,69 @@ public class SystemController {
 		 			 return ResponseEntity.ok(new JwtResponse<PromoDto>(false,p,"Promotion encours"));
 		       	}
 	            
+	            @RequestMapping(value = "/api/getAllUser/{type}")
+		       	public ResponseEntity<?> getAllUser(Authentication auth, @PathVariable("type") int type) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER)) {
+		 				  List<User> users ;
+		 				    if(type==1) {
+		 				      users = user.getUserForDel();
+		 				    } else {
+		 				      users = user.getOUserForDel();	
+		 				    }
+		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Succès")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            @RequestMapping(value = "/api/getStudentForParent/{id}")
+		       	public ResponseEntity<?> getStudentForParent (Authentication auth,  @PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if(utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PARENT) ) {
+		 				    List<User> users = user.getStudentForParent(id);
+		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Succès")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            @RequestMapping(value = "/api/setPin")
+		       	public ResponseEntity<?> setPin(Authentication auth) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER)) {
+		 				  List<User>  users = user.getUserForDel();
+		 				  for(User u : users){
+		 					  user.setPin(1234,u.getId());
+		 				  }
+		        	    return ResponseEntity.ok(new JwtResponse<String>(false,"","Succès")); 
+		 			   }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            
+	            @RequestMapping(value = "/api/setOnePin/{id}/{pin}")
+		       	public ResponseEntity<?> setOnePin(Authentication auth,@PathVariable("pin") int pin,@PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER)) {
+		 				 user.setPin(pin,id);
+		        	     return ResponseEntity.ok(new JwtResponse<String>(false,"","Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            @RequestMapping(value = "/api/setLP/{id}/{etat}/{code}/{pin}")
+		       	public ResponseEntity<?> setLP(Authentication auth,@PathVariable("code") String code,@PathVariable("etat") int etat, @PathVariable("pin") int pin,@PathVariable("id") Long id) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PARENT)) {
+		 				   if(etat==1) {
+		 				      user.setLPP(pin,id,code);
+		 				   }else{
+		 					  user.setLPM(pin,id,code); 
+		 				   }
+		        	     return ResponseEntity.ok(new JwtResponse<String>(false,"","Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
 	            
 	      
    

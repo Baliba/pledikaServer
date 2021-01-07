@@ -21,4 +21,5 @@ public class RoleName {
      public static String  MASTER_P    ="MASTER_P";
      public static String  ADMIN_P    ="ADMIN_P";
      public static String  MANAGER_P  ="MANAGER_P";
+     public static String  BIBLIO ="BIBLIO";
 }
