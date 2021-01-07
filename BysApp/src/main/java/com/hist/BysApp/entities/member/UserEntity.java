@@ -101,7 +101,10 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     private Date   date_de_naiss;
     
     @Column(nullable = true)
-    private Long   pere_id, mere_id;
+    private Long   pere_id;
+    
+    @Column(nullable = true)
+    private Long mere_id;
     
     
     private String last_year, last_moyen, last_etab;
