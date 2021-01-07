@@ -20,8 +20,7 @@ import com.hist.BysApp.Helper.FileStorageProperties;
 		SpringApplication.run(BysAppApplication.class, args);
    }
 	
-	
-/*	
+	/*
    @Override
    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
       return application.sources(BysAppApplication.class);
