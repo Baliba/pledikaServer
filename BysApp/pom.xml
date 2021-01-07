@@ -165,8 +165,7 @@
                     </includes>
                     <jdkVersion>1.8</jdkVersion>
                     <processTypes>
-                        <web>java $JAVA_OPTS -jar
-                            ${project.build.directory}/${project.build.finalName}.jar</web>
+                        <web>java $JAVA_OPTS -jar ${project.build.directory}/${project.build.finalName}.jar --server.port=8080</web>
                     </processTypes>
                 </configuration>
             </plugin> 
