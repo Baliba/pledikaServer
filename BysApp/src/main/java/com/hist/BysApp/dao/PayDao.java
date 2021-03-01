@@ -27,4 +27,10 @@ public interface PayDao extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE p.pay_by=:id ORDER BY p.id DESC")
    	Page<Payment> getPaymentForUser(Pageable paging,@Param("id") Long state);
     
+    @Query("SELECT COUNT (p) FROM Payment WHERE  code_etudiant=:code GROUP BY code_etudiant ")
+    Long getSizePaiement(@Param("code") String code );
+    
+    @Query("SELECT p FROM Payment p WHERE code_etudiant=:code AND promotion=:promo ORDER BY p.id DESC")
+   	List<Payment> getPaymentForUserByPromo(@Param("code") String code, @Param("promo") String promo);
+    
 }

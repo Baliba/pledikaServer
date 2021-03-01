@@ -21,6 +21,7 @@ import com.hist.BysApp.entities.promo.Promotion;
  */
 @CrossOrigin("*")
 public interface RoleRepository extends JpaRepository<Role, Long> {
+	
     Role findByName( String name);
     
 	@Query("SELECT  r FROM Role r WHERE  r.name=:name ")

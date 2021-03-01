@@ -85,6 +85,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
      @Query("SELECT COUNT(u) fROM UserEntity AS u JOIN  u.role  r  WHERE r.name= 'STUDENT' AND u.lover=false  AND u.enabled=true AND exclude = false ")
      int getNbreStudent();
      
+     @Query("SELECT COUNT(u) fROM UserEntity AS u JOIN  u.role  r  WHERE r.name= 'PARENT' AND u.lover=false ")
+     int getNbreParent();
+    
      @Query("SELECT COUNT(u) fROM UserEntity AS u JOIN  u.role  r  WHERE r.name= 'STUDENT' AND u.sexe='F' AND u.lover=false  AND u.enabled=true AND exclude = false ")
      int getNbreFille();
      
@@ -176,10 +179,39 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
      @Modifying
    	 @Transactional
    	 @Query("UPDATE UserEntity AS p SET p.pere_id=:id WHERE p.code=:code AND p.pin=:pn")
-  	 boolean setLPP(@Param("pn")  int pin ,@Param("id")  Long id , @Param("id")  String code);
+  	 int setLPP(@Param("pn")  int pin ,@Param("id")  Long id , @Param("code")  String code);
      
      @Modifying
    	 @Transactional
    	 @Query("UPDATE UserEntity AS p SET p.mere_id=:id WHERE p.code=:code AND p.pin=:pn")
-  	 boolean setLPM(@Param("pn") int pin ,@Param("id")  Long id , @Param("id")  String code);
+  	 int setLPM(@Param("pn") int pin ,@Param("id")  Long id , @Param("code")  String code);
+     
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.pere_id=:id WHERE p.code=:code")
+  	 int setLPPA(@Param("id")  Long id , @Param("code")  String code);
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.mere_id=:id WHERE p.code=:code")
+  	 int setLPMA(@Param("id")  Long id , @Param("code")  String code);
+     
+     @Query("SELECT COUNT(*)  FROM UserEntity WHERE valider = false ")
+     int getNonValider();
+     
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.pere_id=:id WHERE p.code=:code AND p.pin=:pin")
+  	 int setLPPA(@Param("id")  Long id , @Param("code")  String code, @Param("pin") int pin);
+     
+     @Modifying
+   	 @Transactional
+   	 @Query("UPDATE UserEntity AS p SET p.mere_id=:id WHERE p.code=:code AND p.pin=:pin")
+  	 int setLPMA(@Param("id")  Long id , @Param("code")  String code, @Param("pin")  int pin);
+     
+ 
+   	 @Query("SELECT u FROM UserEntity u  WHERE  u.role.name=:name")
+     List<String> getListPhone(@Param("name")  String name);
 }

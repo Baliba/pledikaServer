@@ -53,7 +53,7 @@ public class NotService {
 		  break;
 	  }
       case 3 : {
-    	users = user.findAllStudent();
+    	 users = user.findAllStudent();
     	  tp =  TYPE_NOT.BROADCAST_TO_STUDENT;
 		  break;
 	  }
@@ -75,7 +75,18 @@ public class NotService {
 		  n.setCode_not(ln.getId());
 		  n.setDate_rec(ln.getCreated_at());
 		  notDao.save(n);
-		  
+		
+		   if(not.getCible()==3 || not.getCible()==1) {
+			  if(u.getPere_id()!=null && u.getPere_id()>0  ) {
+				 n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
+			     n.setId_receiver(u.getPere_id());
+			  }
+			  if(u.getMere_id()!=null && u.getMere_id()>0) {
+			     n.setId_receiver(u.getMere_id());
+			     n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
+			  }
+			  notDao.save(n);
+		   }
 		  }
 	  }
 	  return true;
@@ -116,6 +127,15 @@ public class NotService {
 				  n.setCode_not(ln.getId());
 				  n.setDate_rec(ln.getCreated_at());
 				  notDao.save(n);
+		
+				  if(u.getPere_id()!=null && u.getPere_id()>0) {
+				   n.setId_receiver( u.getPere_id());
+				   n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
+				  }
+				  if(u.getMere_id()!=null && u.getMere_id()>0) {
+				   n.setId_receiver(u.getMere_id());
+				   n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
+				  }
 				  }
 			  }
 			  break;
@@ -154,7 +174,15 @@ public class NotService {
 				  n.setCode_not(ln.getId());
 				  n.setDate_rec(ln.getCreated_at());
 				  notDao.save(n);
+				  if(u.getPere_id()!=null && u.getPere_id()>0) {
+				   n.setId_receiver(u.getPere_id());
+				   n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
 				  }
+				  if(u.getMere_id()!=null && u.getMere_id()>0) {
+				   n.setId_receiver(u.getMere_id());
+				   n.setMsg(not.getMessage()+"\n ["+u.getLastName()+" "+u.getFirstName()+"]");
+				  }
+				 }
 			  }
 			  break;
 		  }
@@ -165,7 +193,7 @@ public class NotService {
 		}
 
 	public boolean sendNotToOneUser(UserEntity user, String msg,String titre,String btn) {
-		 Notification n = new Notification();
+		  Notification n = new Notification();
 		  n.setId_sender(user.getId());
 		  n.setId_receiver(0L);
 		  n.setMsg(msg);
@@ -175,6 +203,17 @@ public class NotService {
 		  n.setDate_rec(new Date());
 		  n.setBtn(btn);
 		  notDao.save(n);
+		  
+		 if(user.getPere_id()!=null && user.getPere_id()>0) {
+			   n.setId_receiver(user.getPere_id());
+			   n.setMsg(msg+"\n ["+user.getLastName()+" "+user.getFirstName()+"]");
+			  }
+		 if(user.getMere_id()!=null && user.getMere_id()>0) {
+			   n.setId_receiver(user.getMere_id());
+			   n.setMsg(msg+"\n ["+user.getLastName()+" "+user.getFirstName()+"]");
+		  }
+		  notDao.save(n);
+		  
 		  return true;
 	}
 }

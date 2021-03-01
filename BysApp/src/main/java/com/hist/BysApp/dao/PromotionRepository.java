@@ -3,6 +3,7 @@ package com.hist.BysApp.dao;
 
 import com.hist.BysApp.entities.member.UserEntity;
 import com.hist.BysApp.entities.paiement.OPaie;
+import com.hist.BysApp.entities.promo.Promo_af;
 import com.hist.BysApp.entities.promo.Promotion;
 import com.hist.BysApp.model.ASDto;
 import com.hist.BysApp.model.PromoDto;
@@ -54,5 +55,8 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 
 	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE enabled=true AND  p.code=:code")
 	 PromoDto getPromoByCode(@Param("code") String code);
+	 
+	 @Query("SELECT p.moy_accept FROM Promotion p Where p.id=:idp ")
+	 double getPassMoy(@Param("idp") Long idp);
 	 
 }

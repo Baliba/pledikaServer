@@ -54,14 +54,14 @@ public class Programme  extends cObj implements Serializable {
 	@JsonIgnoreProperties({"programme","promo_cours"})
 	private Collection<Course> course;
     
-    @OneToMany(mappedBy="programme")
-    @JsonIgnoreProperties({"programme"})
-	private List<ProgFourniture> progfourniture;
-    
-	private String  niveau;
-	
-	   @Column(columnDefinition=" integer default 24 ")
-	   private Integer max_cours;
-	   @Column(columnDefinition=" integer default 24 ")
-	   private Integer max_four;
+   @OneToMany(mappedBy="programme")
+   @JsonIgnoreProperties({"programme"})
+   private List<ProgFourniture> progfourniture;
+
+   private String  niveau;
+
+   @Column(columnDefinition=" integer default 24 ")
+   private Integer max_cours;
+   @Column(columnDefinition=" integer default 24 ")
+   private Integer max_four;
 }

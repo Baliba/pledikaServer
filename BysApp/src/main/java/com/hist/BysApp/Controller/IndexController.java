@@ -112,6 +112,7 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 import com.hist.BysApp.service.NotService;
 
+import dto.Reussite;
 import dto.User;
 
 @Controller 
@@ -294,9 +295,12 @@ public class IndexController {
 		   ut.setFirstName(u.getFirstName());
 		   ut.setLastName(u.getLastName());
 		   ut = user.save(ut);
+		   // -------------
 		   rDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
 		   pars.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
-		   payDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
+		   if(ut.getRole().getName().equals("STUDENT")) {
+		    payDao.editFullName(ut.getCode(),u.getFirstName(),u.getLastName());
+		   }
 		 
 		   return ResponseEntity.ok(new JwtResponse<UserEntity>(false,ut,"Modifier nom complet ")); 
 		   }else {
@@ -600,7 +604,7 @@ public class IndexController {
 	   @RequestMapping(value = "/api/addNot",method = RequestMethod.POST)
 	   public ResponseEntity<?> addNot(Authentication auth,@RequestBody NotRequest not) {
 		   UserEntity  utt = getUser(auth);
-		   if( utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
+		   if(utt.getRole().getName().equals(RoleName.PROF) || utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)) {
 				   LNot ln = new LNot();
 				   ln.setId_sender(utt.getId());
 				   ln.setMsg(not.getMessage());
@@ -1157,4 +1161,35 @@ public class IndexController {
 		   }
 		}
 	    
+		 @RequestMapping(value = "/api/reussite/{idp}")
+		 public ResponseEntity<?>  reussite(Authentication auth, @PathVariable("idp") Long idp) {
+			 List<Reussite> rss = new ArrayList<>();   
+			 List<PromoFrag>  pfs = pfDao.getFragByPromo(idp);
+			 Long  total_e = pars.countStudent(idp) ;
+			 Long  total_eg = pars.countStudentBySexe(idp);
+	
+			 for(PromoFrag pf : pfs) {
+			          Reussite rs = new Reussite();
+			          rs.setPeriod(pf.getCode());
+			          rs.setTotal_class(total_e);
+			          rs.setTotal_g(total_eg);
+			          rs.setTotal_f(total_e-total_eg);
+			          //  student IN 
+			         Long tic = fpDao.countStudent(pf.getId());
+			         rs.setTotal_iclass(tic); 
+			         Long tig = fpDao.countStudentBySexe(pf.getId());
+			         rs.setTotal_ig(tig);
+			         rs.setTotal_if(tic-tig);
+			         List<Long> tp = rDao.getStudentPass(pf.getId());
+			         for(Long utp : tp) {
+			        	System.out.print("\n"+pf.getCode()+": \n"+utp+"\n");
+			         }
+			         
+			       //  rs.setTotal_pass(tp);
+			         rss.add(rs);
+			 }    
+			          
+			 return ResponseEntity.ok(new JwtResponse<List<Reussite>>(false, rss, "")); 
+			 
+		 }
 }

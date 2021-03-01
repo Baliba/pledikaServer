@@ -80,7 +80,6 @@ public interface ResultsRepository extends JpaRepository<Results, Long> {
 	 List<MoyDto> getEtudiantsToMG(@Param("id") Long id );
 	 
 	 // ------------------------------ REPRISE---------------------------------------------//
-	 
 	 @Query("SELECT new com.hist.BysApp.model.MoyDto(SUM(r.coef*r.note),SUM(r.coef*r.note_total),r.parcours_frag.parcours.user.lastName,r.parcours_frag.parcours.user.firstName,r.code_student,r.parcours_frag.parcours.id_student,r.parcours_frag.parcours.actived,r.parcours_frag.parcours.id, r.parcours_frag.parcours.promotion.moy_total, r.parcours_frag.parcours.promotion.moy_accept,r.parcours_frag.parcours.user.lover,r.parcours_frag.parcours.promotion.moy_reprise) FROM Results r WHERE r.frag_cours.examen=true AND r.parcours_frag.promofrag.actived=true AND r.parcours_frag.promofrag.base=true AND  r.parcours_frag.promofrag.reprise=false AND  r.parcours_frag.parcours.promotion.id=:id GROUP BY r.parcours_frag.parcours.promotion.moy_reprise, r.parcours_frag.parcours.id, r.parcours_frag.parcours.user.lover, r.parcours_frag.parcours.promotion.moy_total, r.parcours_frag.parcours.promotion.moy_accept, r.parcours_frag.parcours.user.lastName,r.parcours_frag.parcours.user.firstName, r.code_student,r.parcours_frag.parcours.id_student,r.parcours_frag.parcours.actived   HAVING ((SUM(r.coef*r.note)/SUM(r.coef*r.note_total))*r.parcours_frag.parcours.promotion.moy_total) < r.parcours_frag.parcours.promotion.moy_accept    ORDER BY r.parcours_frag.parcours.user.lastName, r.parcours_frag.parcours.user.firstName ")
 	 List<MoyDto> getEtudiantsToFR(@Param("id") Long id );
 	 
@@ -91,7 +90,8 @@ public interface ResultsRepository extends JpaRepository<Results, Long> {
 	 @Transactional
 	 @Query("DELETE Results r WHERE r.frag_cours.id =:c")
 	 public int deleteResult(@Param("c") Long c);
-		
 	 
+	 @Query("SELECT COUNT(*) FROM Results r WHERE r.frag_cours.examen=true AND r.parcours_frag.promofrag.actived=true AND r.parcours_frag.promofrag.base=true AND  r.parcours_frag.promofrag.reprise=false AND  r.parcours_frag.parcours.promotion.id=:id GROUP BY r.parcours_frag.parcours.promotion.moy_reprise, r.parcours_frag.parcours.id, r.parcours_frag.parcours.user.lover, r.parcours_frag.parcours.promotion.moy_total, r.parcours_frag.parcours.promotion.moy_accept, r.parcours_frag.parcours.user.lastName,r.parcours_frag.parcours.user.firstName, r.code_student,r.parcours_frag.parcours.id_student,r.parcours_frag.parcours.actived   HAVING ((SUM(r.coef*r.note)/SUM(r.coef*r.note_total))*r.parcours_frag.parcours.promotion.moy_total) < r.parcours_frag.parcours.promotion.moy_accept    ORDER BY r.parcours_frag.parcours.user.lastName, r.parcours_frag.parcours.user.firstName ")		
+	 List<Long>  getStudentPass(@Param("id") Long id );
  
 }

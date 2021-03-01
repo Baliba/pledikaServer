@@ -25,6 +25,7 @@ public class Payment extends cObj  implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long     id;
+	
 	private  String  promotion;
 	private  String  code_etudiant;
 	private  String  serie;
@@ -34,6 +35,7 @@ public class Payment extends cObj  implements Serializable {
 	private  double  remain;
 	private  Long    pay_by;
 	private  Long    id_parcours;
+	
 	private  boolean validate;
 	private Date     validate_date;
 	private Long     validate_by;

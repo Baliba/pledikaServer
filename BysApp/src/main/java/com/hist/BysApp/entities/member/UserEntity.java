@@ -78,19 +78,18 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     private String nom_conjoint, phone, hphone, adresse;
     private boolean arefaire;
     private double  sold;
-    
     private double  hsold;
     
     @ManyToOne
-    @JsonIgnoreProperties("niveau_rel")
+    @JsonIgnoreProperties({"niveau_rel","copaie","option","niv_doc"})
     private Niveau prev_class;
     
     @ManyToOne
-    @JsonIgnoreProperties("niveau_rel")
+    @JsonIgnoreProperties({"niveau_rel","copaie","option","niv_doc"})
     private Niveau next_class;
     
     @ManyToOne
-    @JsonIgnoreProperties("niveau_rel")
+    @JsonIgnoreProperties({"niveau_rel","copaie","niv_doc","option"})
     private Niveau current_class;
     
     
@@ -197,6 +196,9 @@ public @Data class UserEntity extends cObj implements Serializable, UserDetails{
     
     @Column(nullable = false, columnDefinition=" boolean default false ")
     private boolean exclude;
+    
+    @Column(nullable = false, columnDefinition=" boolean default false ")
+    private boolean valider;
     
     public UserEntity(){}
     public UserEntity(String username, String password, String fname, String lname ) {

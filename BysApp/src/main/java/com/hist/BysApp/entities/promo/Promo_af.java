@@ -112,5 +112,8 @@ public class Promo_af extends cObj implements Serializable {
     
     @Column(nullable = true, updatable=true)
     private String end_time;
+    
+    @Column(nullable = false, columnDefinition=" integer default 1 ")
+    private int mode_paiement;
 }
 

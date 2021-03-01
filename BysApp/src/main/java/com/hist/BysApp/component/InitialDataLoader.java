@@ -18,7 +18,9 @@ import com.hist.BysApp.dao.OPaieDao;
 import com.hist.BysApp.dao.OptionRepository;
 import com.hist.BysApp.dao.PRFragDao;
 import com.hist.BysApp.dao.PaysRepository;
+import com.hist.BysApp.dao.ProgDao;
 import com.hist.BysApp.dao.RoleRepository;
+import com.hist.BysApp.dao.SalleRepository;
 import com.hist.BysApp.dao.UserRepository;
 import com.hist.BysApp.dao.VDao;
 import com.hist.BysApp.dao.VacationRepository;
@@ -31,6 +33,7 @@ import com.hist.BysApp.entities.grade.Document;
 import com.hist.BysApp.entities.grade.Domaine;
 import com.hist.BysApp.entities.grade.Niveau;
 import com.hist.BysApp.entities.grade.Option;
+import com.hist.BysApp.entities.grade.Salle;
 import com.hist.BysApp.entities.grade.Vacation;
 import com.hist.BysApp.entities.member.Role;
 import com.hist.BysApp.entities.member.UserEntity;
@@ -40,6 +43,7 @@ import com.hist.BysApp.entities.paiement.OPaie;
 import com.hist.BysApp.entities.paiement.PRFrag;
 import com.hist.BysApp.entities.paiement.Versement;
 import com.hist.BysApp.entities.promo.Fragment;
+import com.hist.BysApp.entities.promo.Programme;
 import com.hist.BysApp.factories.Helper;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
@@ -109,7 +113,13 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Autowired
     private CVDao cvDao;
     
+    @Autowired
+    SalleRepository salle;
+    
 	HashMap<String,List<Niveau>> niveau;
+	
+	@Autowired
+	ProgDao progDao;
     
     @Transactional 
     public void vacINF() {
@@ -279,6 +289,8 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         //*********************
         Long nu = userRepository.count();
         if(nu == 0L){ 	
+        setSalle() ;
+        setProgramme();
         Role adminRole = roleRepository.findByName(RoleName.MASTER);
         UserEntity user = new UserEntity();
         user.setId(1L);
@@ -448,5 +460,35 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
             obj = new Fragment(name,true);
             fDao.save(obj);
         }
+    }
+    
+    @Transactional 
+    public void setSalle() {
+    	for(int i=1 ; i <= 14; i++) {
+    	   Salle s = new Salle ();
+    	         s.setCode("S"+i);
+    	         s.setName("Classe "+i);
+    	         s.setType_salle("Salle");
+    	         salle.save(s);
+    	}
+    }
+ 
+    @Transactional 
+    public void setProgramme() {
+    	int i = 0;
+    	List<Option> os = optionDao.findAll();
+    	for (Option op: os) {
+    		for (Niveau niv: op.getNiveau()) {
+        		Programme p = new Programme();
+        		          p.setCode(" P-"+niv.getCode()+"-A");
+        		          p.setName(niv.getName()+"-A");
+        		          p.setNiveau(niv.getCode());
+        		          p.setPos(i);
+        		          p.setMax_cours(30);
+        		          p.setMax_four(30);
+        		          i++;
+        		          progDao.save(p);
+        	}
+    	}
     }
 }

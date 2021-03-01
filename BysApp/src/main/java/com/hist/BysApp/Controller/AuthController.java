@@ -50,7 +50,7 @@ public class AuthController {
 	
     
     
-     @RequestMapping(value = "/api/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) throws Exception {
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();

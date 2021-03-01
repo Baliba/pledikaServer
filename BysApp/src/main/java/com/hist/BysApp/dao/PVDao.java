@@ -27,6 +27,9 @@ public interface PVDao extends JpaRepository<PVersement, Long> {
 	@Query("SELECT p FROM PVersement p where p.parcours.id=:id ORDER BY p.pos ASC ")
     List<PVersement> getVerseForParcours(@Param("id") Long id); 
 	
+	@Query("SELECT p FROM PVersement p where  p.parcours.promotion.id=:idp AND  p.parcours.user.id=:idu ORDER BY p.pos ASC ")
+    List<PVersement> getVerseForPromoAndUser(@Param("idp") Long idp, @Param("idu") Long idu); 
+	
 	@Query("SELECT p FROM PVersement p where p.id=:id ORDER BY p.pos ASC ")
     PVersement getVerse(@Param("id") Long id); 
 	

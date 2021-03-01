@@ -154,7 +154,7 @@ public class AppController {
 	@Autowired
 	PFragDao pfDao;
 
-	@Autowired
+	@Autowired 
 	FCoursDao fcDao;
 
 	@Autowired
@@ -165,6 +165,7 @@ public class AppController {
    
 	@Autowired
 	FouDao fDao;
+	
 	@Autowired
 	PFouDao pfouDao;
 	
@@ -360,114 +361,31 @@ public class AppController {
 
 		return ResponseEntity.ok(new JwtResponse<String>(true, null, ""));
 	}
+	
+	@RequestMapping(value = "/api/delStudentToPromoV2/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> delStudentToPromoV2(Authentication auth, @PathVariable("id") Long id) {
 
-	@Transactional
-	@RequestMapping(value = "/api/addStudentToPromo", method = RequestMethod.POST)
-	public ResponseEntity<?> addStudentToPromo(@RequestBody ParcoursRequest u) {
+		UserEntity utt = getUser(auth);
+		if (utt.getRole().getName().equals(RoleName.ADMIN) || utt.getRole().getName().equals(RoleName.MASTER)
+				|| utt.getRole().getName().equals(RoleName.MANAGER)) {
 
-		// get user
-		Optional<UserEntity> s = user.findById(u.getId_student());
-		// check if user present
-		if (s.isPresent()) {
-			UserEntity nu = s.get();
-			// check promo
-			Optional<Promotion> prom = promo.findById(u.getId_promo());
-			// check is present
-			if (prom.isPresent()) {
-				Promotion np = prom.get();
-				if(np.getMax_student()<=np.getParcours().size()) {
-					return ResponseEntity.ok(new ErrorResponse("Le nombre maximum d'etudiants pour cette promotion est "+np.getMax_student(), true));
-				}
-				// create parcours
-				Parcours p = new Parcours();
-				p.setId_promo(np.getId());
-				p.setActived(true);
-				// add user and promo
-				String code = nu.getCode() + "-" + u.getId_promo();
-				p.setCode(code);
-				p.setId_student(nu.getId());
-				p.setSexe(nu.getSexe());
-				p.setNom(nu.getLastName());
-				p.setPnom(nu.getFirstName());
-				p.setGranted(nu.getGranted());
-				p.setCode_student(nu.getCode());
-				p.setUser(nu);
-				p.setPromo_name(np.getCode());
-				p.setPromotion(np);
-				p.setNiv_code(np.getCode_niveau());
-				p.setCycle_code(np.getCode_cycle());
-				p.setOption_paiement(u.getId_opaie());
-				// create list versement for parcours
-				List<PVersement> pv =  new ArrayList<PVersement>();
-				List<PVersement> ppv = new ArrayList<PVersement>();
-				Long codep = u.getId_opaie();
-				Optional<CycleOPaie> cop = this.cop.findById(codep);
-				Collection<CycleVersement> cvs = cop.get().getCversement();
-				for (CycleVersement cv : cvs) {
-					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
-						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-					}
-				}
-				for (CycleVersement cv : cvs) {
-				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
-					PVersement npv = new PVersement();
-					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
-					npv.setJour_limit(cv.getJour_limit());
-					npv.setMois_limit(cv.getMois_limit());
-					npv.setMontant_pay((double) 0);
-					npv.setCode(cv.getCode());
-					npv.setActived(true);
-					npv.setCode_share(cv.getCode());
-					npv.setType_verse(cv.getType_verse());
-					npv.setPos(cv.getPos());
-					if (cv.getMontant() > 0) {
-						if (nu.getGranted() == 0) {
-							npv.setMontant_to_pay(cv.getMontant());
-							npv.setMontant_init((double) 0);
-						} else if (nu.getGranted() == 1) {
-							npv.setMontant_to_pay((double) 0);
-							npv.setMontant_init(cv.getMontant());
-						} else {
-							npv.setMontant_to_pay(cv.getMontant() / 2);
-							npv.setMontant_init(cv.getMontant()/2);
-						}
-						pv.add(npv);
-					} else {
-						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-					}
-				 }
-				}
-
-             if(pv.size()<=0) { return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle",true)); }
-			
-				Parcours tnp = pars.findByCode(code);
-				closeOne(p.getId(), p.getCode_student(), false);
-				if (tnp == null) {
-					p = pars.save(p);
-					for (PVersement npv : pv) {
-						PVersement sv = pvd.findByName(npv.getName());
-						if (sv == null) {
-							npv.setParcours(p);
-							ppv.add(pvd.save(npv));
-						}
-					}
-					nu.setCurrent_class(prom.get().getNiveau_rel().getNiveau());
-					String ncode = prom.get().getNiveau_rel().getNiveau().getNext();
-					Niveau niv = nivRep.findByCode(ncode);
-					String code2 = prom.get().getNiveau_rel().getNiveau().getPrev();
-					Niveau niv2 = nivRep.findByCode(code2);
-					nu.setNext_class(niv);
-					nu.setPrev_class(niv2);
-					nu.setCurrent_promo(np.getCode());
-					nu = user.save(nu);
-					return ResponseEntity.ok(new JwtResponse<Parcours>(false, p, ""));
-				} else {
-					return ResponseEntity.ok(new ErrorResponse("Etudiant existe déjà", true));
+			Optional<Parcours> par = pars.findById(id);
+			if (par.isPresent()) {
+				Parcours np = par.get();
+				UserEntity s = np.getUser();
+				Promotion pro = np.getPromotion();
+				if (s != null) {
+					s.setCurrent_promo(null);
+					user.save(s);
+					pars.deleteById(np.getId());
+					return ResponseEntity.ok(new JwtResponse<String>(false, null, ""));
 				}
 			}
+		} else {
+			return ResponseEntity.ok(new JwtResponse<UserEntity>(true, null, "Vous n'etes pas autorisé"));
 		}
 
-		return ResponseEntity.ok(new ErrorResponse("", true));
+		return ResponseEntity.ok(new JwtResponse<String>(true, null, ""));
 	}
 
 	@RequestMapping(value = "/api/getStudentToPromo", method = RequestMethod.GET)
@@ -687,7 +605,7 @@ public class AppController {
 	@RequestMapping(value = "/api/admission", method = RequestMethod.POST)
 	public ResponseEntity<?> admis(@RequestBody RegisterRequest u, Authentication authentication) throws Exception {
 		UserDetails me = (UserDetails) authentication.getPrincipal();
-
+        Etablissement etab = etabDao.findAll().get(0);
 		UserEntity cu = this.UserDetails.getUserInfo(me.getUsername());
 
 		String email = u.getUsername();
@@ -738,7 +656,11 @@ public class AppController {
 		// PAIEMENT
 		PaiementAdmission ap = new PaiementAdmission();
 		ap.setNiveau(niv);
-		ap.setMontant(niv.getOption().getMontant_admis());
+		if (etab.getMode_paiement()==1) {
+		 ap.setMontant(niv.getOption().getMontant_admis());
+		} else {
+		  ap.setMontant(niv.getMontant_admis_classe());
+		}
 		ap.setCode("SD-" + ut.getCode());
 		ap.setCreated_by(cu.getId());
 		ap = adp.save(ap);
@@ -831,34 +753,6 @@ public class AppController {
 
 		return ResponseEntity.ok(new JwtResponse<List<Frag_cours>>(true, fcs, " il y a 0 cours dans cette promotion "));
 
-	}
-
-	@RequestMapping(value = "/api/addStudentToPromoFrag/{id}/{idp}")
-	public ResponseEntity<?> addStudenToPromoFrag(@PathVariable("id") Long id, @PathVariable("idp") Long idp) {
-		List<Parcours> pcs = pars.getParcours(idp);
-		// List<Parcours_frag> fcs = new ArrayList<Parcours_frag>();
-		PromoFrag pfg = pfDao.findById(id).get();
-		if (pcs.size() > 0) {
-			// Parcours_frag pf = fpDao.findById(id).get();
-			for (Parcours pc : pcs) {
-				Parcours_frag fc = new Parcours_frag();
-				String code = pc.getCode() + "-" + id;
-				Parcours_frag fct = fpDao.findByCode(code);
-				if (fct == null) {
-					fc.setCode(code);
-					fc.setCode_student(pc.getCode_student());
-					fc.setNom(pc.getNom());
-					fc.setPnom(pc.getPnom());
-					fc.setParcours(pc);
-					fc.setSexe(pc.getSexe());
-					fc.setPromofrag(pfg);
-					fc.setPromo_name(pc.getPromo_name());
-					fc = fpDao.save(fc);
-					// fcs.add(fc);
-				}
-			}
-		}
-		return ResponseEntity.ok(new JwtResponse<Parcours>(true, null, "parcours par fragment"));
 	}
 
 	@RequestMapping(value = "/api/getPars_cours/{idf}")
@@ -1386,6 +1280,7 @@ public class AppController {
 		stat.setTotal_garcon(user.getNbreGarcon());
 		stat.setTotal_fille(user.getNbreFille());
 		stat.setTotal_pers(user.getNbrePers());
+		stat.setTotal_parent(user.getNbreParent());
 		stat.setTotal_cours(cDao.count());
 		return ResponseEntity.ok(new JwtResponse<RStat>(false, stat, "Statistiques"));
 	}

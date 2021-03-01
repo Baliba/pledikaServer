@@ -75,6 +75,8 @@ import com.hist.BysApp.entities.paiement.PVersement;
 import com.hist.BysApp.entities.paiement.PaiementAdmission;
 import com.hist.BysApp.entities.paiement.Payment;
 import com.hist.BysApp.entities.paiement.Payroll;
+import com.hist.BysApp.entities.paiement.classe.ClasseOPaie;
+import com.hist.BysApp.entities.paiement.classe.ClasseVersement;
 import com.hist.BysApp.entities.promo.Course;
 import com.hist.BysApp.entities.promo.Frag_cours;
 import com.hist.BysApp.entities.promo.HCours;
@@ -179,6 +181,15 @@ public class SystemController {
 	
 	@Autowired
 	ContactDao   contDao;
+	
+	@Autowired
+	CLOPaieDao cloDao;
+
+	@Autowired
+	CLVDao clvDao;
+	
+	@Autowired
+	PayDao payRepo;
 	
 	  public UserEntity  getUser (Authentication authentication){
 		   UserDetails me = (UserDetails) authentication.getPrincipal();
@@ -567,10 +578,12 @@ public class SystemController {
 	        				if(id==null) {
 	        					return ResponseEntity.ok(new ErrorResponse("Vous devez configurer la prochaine année academique.", true));
 	        				}
+	        				
 	        			    Promotion np = promo.getSamePromo(id, hp.getNiveau_rel().getId());
 	        				if(np.getMax_student()<=np.getParcours().size()) {
 	        					return ResponseEntity.ok(new ErrorResponse("Le nombre maximum d'etudiants pour cette promotion est "+np.getMax_student(), true));
 	        				}
+	        				int mpaie = etabDao.findAll().get(0).getMode_paiement();
 	        				// create parcours
 	        				Parcours p = new Parcours();
 	        				p.setId_promo(np.getId());
@@ -590,47 +603,94 @@ public class SystemController {
 	        				p.setNiv_code(np.getCode_niveau());
 	        				p.setCycle_code(np.getCode_cycle());
 	        				p.setOption_paiement(u.getId_opaie());
+	        				p.setMode_paiement(mpaie);
 	        				// create list versement for parcours
 	        				List<PVersement> pv =  new ArrayList<PVersement>();
 	        				List<PVersement> ppv = new ArrayList<PVersement>();
 	        				Long codep = u.getId_opaie();
 	        				Optional<CycleOPaie> cop = this.cop.findById(codep);
-	        				Collection<CycleVersement> cvs = cop.get().getCversement();
-	        				for (CycleVersement cv : cvs) {
-	        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
-	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-	        					}
+	        				
+	        				if(mpaie==1) {
+	        					Collection<CycleVersement> cvs = cop.get().getCversement();
+		        				for (CycleVersement cv : cvs) {
+		        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
+		        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+		        					}
+		        				}
+		        				
+		        				for (CycleVersement cv : cvs) {
+			        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
+			        					PVersement npv = new PVersement();
+			        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
+			        					npv.setJour_limit(cv.getJour_limit());
+			        					npv.setMois_limit(cv.getMois_limit());
+			        					npv.setMontant_pay((double) 0);
+			        					npv.setCode(cv.getCode());
+			        					npv.setActived(true);
+			        					npv.setCode_share(cv.getCode());
+			        					npv.setType_verse(cv.getType_verse());
+			        					npv.setPos(cv.getPos());
+			        					if (cv.getMontant() > 0) {
+			        						if (nu.getGranted() == 0) {
+			        							npv.setMontant_to_pay(cv.getMontant());
+			        							npv.setMontant_init((double) 0);
+			        						} else if (nu.getGranted() == 1) {
+			        							npv.setMontant_to_pay((double) 0);
+			        							npv.setMontant_init(cv.getMontant());
+			        						} else {
+			        							npv.setMontant_to_pay(cv.getMontant() / 2);
+			        							npv.setMontant_init(cv.getMontant()/2);
+			        						}
+			        						pv.add(npv);
+			        					} else {
+			        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+			        					}
+			        				 }
+			        				}
+	        					
+	        				} else {
+	        					CycleOPaie ncop = cop.get();
+	      					    String code_niv = np.getNiveau_rel().getNiveau().getCode();
+	      					    ClasseOPaie clop = cloDao.findByCode(ncop.getCode()+"_"+code_niv);
+	      					    Collection<ClasseVersement> cvs = clop.getCversement();
+		        				for (ClasseVersement cv : cvs) {
+		        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
+		        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+		        					}
+		        				}
+		        				
+		        				for (ClasseVersement cv : cvs) {
+			        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
+			        					PVersement npv = new PVersement();
+			        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
+			        					npv.setJour_limit(cv.getJour_limit());
+			        					npv.setMois_limit(cv.getMois_limit());
+			        					npv.setMontant_pay((double) 0);
+			        					npv.setCode(cv.getCode());
+			        					npv.setActived(true);
+			        					npv.setCode_share(cv.getCode());
+			        					npv.setType_verse(cv.getType_verse());
+			        					npv.setPos(cv.getPos());
+			        					if (cv.getMontant() > 0) {
+			        						if (nu.getGranted() == 0) {
+			        							npv.setMontant_to_pay(cv.getMontant());
+			        							npv.setMontant_init((double) 0);
+			        						} else if (nu.getGranted() == 1) {
+			        							npv.setMontant_to_pay((double) 0);
+			        							npv.setMontant_init(cv.getMontant());
+			        						} else {
+			        							npv.setMontant_to_pay(cv.getMontant() / 2);
+			        							npv.setMontant_init(cv.getMontant()/2);
+			        						}
+			        						pv.add(npv);
+			        					} else {
+			        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+			        					}
+			        				 }
+			        			}
+	        					
 	        				}
-	        				for (CycleVersement cv : cvs) {
-	        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
-	        					PVersement npv = new PVersement();
-	        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
-	        					npv.setJour_limit(cv.getJour_limit());
-	        					npv.setMois_limit(cv.getMois_limit());
-	        					npv.setMontant_pay((double) 0);
-	        					npv.setCode(cv.getCode());
-	        					npv.setActived(true);
-	        					npv.setCode_share(cv.getCode());
-	        					npv.setType_verse(cv.getType_verse());
-	        					npv.setPos(cv.getPos());
-	        					if (cv.getMontant() > 0) {
-	        						if (nu.getGranted() == 0) {
-	        							npv.setMontant_to_pay(cv.getMontant());
-	        							npv.setMontant_init((double) 0);
-	        						} else if (nu.getGranted() == 1) {
-	        							npv.setMontant_to_pay((double) 0);
-	        							npv.setMontant_init(cv.getMontant());
-	        						} else {
-	        							npv.setMontant_to_pay(cv.getMontant() / 2);
-	        							npv.setMontant_init(cv.getMontant()/2);
-	        						}
-	        						pv.add(npv);
-	        					} else {
-	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-	        					}
-	        				 }
-	        				}
-
+	        			
 	                     if(pv.size()<=0) { return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle",true)); }
 	        			
 	        				Parcours tnp = pars.findByCode(code);
@@ -723,64 +783,115 @@ public class SystemController {
 	        	public ResponseEntity<?> addStudentToPromo(Authentication auth, @RequestBody ParcoursRequest u) {
 	            	 UserEntity  utt = getUser(auth);
 	            	 if( utt.getRole().getName().equals(RoleName.MASTER)) {
+	            		    Etablissement e = etabDao.findAll().get(0);
 	            	        Long idp = u.getId_student();
 	        				Parcours p = pars.getOneParcours(idp);
+	        				String code_niv = p.getPromotion().getNiveau_rel().getNiveau().getCode();
                             UserEntity nu = p.getUser();
+                            
 	        				p.setOption_paiement(u.getId_opaie());
+	        				
 	        				// create list versement for parcours
 	        				List<PVersement> pv =  new ArrayList<PVersement>();
 	        				List<PVersement> ppv = new ArrayList<PVersement>();
+	        				// l
 	        				Long codep = u.getId_opaie();
-	        				Optional<CycleOPaie> cop = this.cop.findById(codep);
-	        				Collection<CycleVersement> cvs = cop.get().getCversement();
-	        				for (CycleVersement cv : cvs) {
-	        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
-	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-	        					}
+	        				
+	        				if(e.getMode_paiement()==1) {
+	        					
+	        					Optional<CycleOPaie> cop = this.cop.findById(codep);
+		        				Collection<CycleVersement> cvs = cop.get().getCversement();
+		        				for (CycleVersement cv : cvs) {
+		        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
+		        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+		        					}
+		        				}
+		        				
+		        				for (CycleVersement cv : cvs) {
+			        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
+			        					PVersement npv = new PVersement();
+			        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
+			        					npv.setJour_limit(cv.getJour_limit());
+			        					npv.setMois_limit(cv.getMois_limit());
+			        					npv.setMontant_pay((double) 0);
+			        					npv.setCode(cv.getCode());
+			        					npv.setActived(true);
+			        					npv.setCode_share(cv.getCode());
+			        					npv.setType_verse(cv.getType_verse());
+			        					npv.setPos(cv.getPos());
+			        					if (cv.getMontant() > 0) {
+			        						if (nu.getGranted() == 0) {
+			        							npv.setMontant_to_pay(cv.getMontant());
+			        							npv.setMontant_init((double) 0);
+			        						} else if (nu.getGranted() == 1) {
+			        							npv.setMontant_to_pay((double) 0);
+			        							npv.setMontant_init(cv.getMontant());
+			        						} else {
+			        							npv.setMontant_to_pay(cv.getMontant() / 2);
+			        							npv.setMontant_init(cv.getMontant()/2);
+			        						}
+			        						pv.add(npv);
+			        					} else {
+			        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+			        					}
+			        				 }
+			        				}
+	        					
+	        				} else {
+	        					Optional<CycleOPaie> cop = this.cop.findById(codep);
+	        					CycleOPaie ncop = cop.get();
+	        					ClasseOPaie clop = cloDao.findByCode(ncop.getCode()+"_"+code_niv);
+	      					    Collection<ClasseVersement> cvs = clop.getCversement();
+		        				for (ClasseVersement cv : cvs) {
+		        					if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()==0) {
+		        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+		        					}
+		        				}
+		        				for (ClasseVersement cv : cvs) {
+			        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
+			        					PVersement npv = new PVersement();
+			        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
+			        					npv.setJour_limit(cv.getJour_limit());
+			        					npv.setMois_limit(cv.getMois_limit());
+			        					npv.setMontant_pay((double) 0);
+			        					npv.setCode(cv.getCode());
+			        					npv.setActived(true);
+			        					npv.setCode_share(cv.getCode());
+			        					npv.setType_verse(cv.getType_verse());
+			        					npv.setPos(cv.getPos());
+			        					if (cv.getMontant() > 0) {
+			        						if (nu.getGranted() == 0) {
+			        							npv.setMontant_to_pay(cv.getMontant());
+			        							npv.setMontant_init((double) 0);
+			        						} else if (nu.getGranted() == 1) {
+			        							npv.setMontant_to_pay((double) 0);
+			        							npv.setMontant_init(cv.getMontant());
+			        						} else {
+			        							npv.setMontant_to_pay(cv.getMontant() / 2);
+			        							npv.setMontant_init(cv.getMontant()/2);
+			        						}
+			        						pv.add(npv);
+			        					} else {
+			        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
+			        					}
+			        				 }
+			        				}
 	        				}
-	        				for (CycleVersement cv : cvs) {
-	        				if(cv.type_verse!=3 && cv.isActived() && cv.getMontant()>0) {
-	        					PVersement npv = new PVersement();
-	        					npv.setName(cv.getName() + "-" + u.getId_student() + "-" + u.getId_promo());
-	        					npv.setJour_limit(cv.getJour_limit());
-	        					npv.setMois_limit(cv.getMois_limit());
-	        					npv.setMontant_pay((double) 0);
-	        					npv.setCode(cv.getCode());
-	        					npv.setActived(true);
-	        					npv.setCode_share(cv.getCode());
-	        					npv.setType_verse(cv.getType_verse());
-	        					npv.setPos(cv.getPos());
-	        					if (cv.getMontant() > 0) {
-	        						if (nu.getGranted() == 0) {
-	        							npv.setMontant_to_pay(cv.getMontant());
-	        							npv.setMontant_init((double) 0);
-	        						} else if (nu.getGranted() == 1) {
-	        							npv.setMontant_to_pay((double) 0);
-	        							npv.setMontant_init(cv.getMontant());
-	        						} else {
-	        							npv.setMontant_to_pay(cv.getMontant() / 2);
-	        							npv.setMontant_init(cv.getMontant()/2);
-	        						}
-	        						pv.add(npv);
-	        					} else {
-	        						return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle", true));
-	        					}
-	        				 }
-	        				}
-
+	        				
 	                     if(pv.size()<=0) { return ResponseEntity.ok(new ErrorResponse("Paiement non configurer pour ce cycle",true)); }
-	        					p = pars.save(p);
-	        					for (PVersement npv : pv) {
+	        				p = pars.save(p);
+	        			 for (PVersement npv : pv) {
 	        						 PVersement sv =  pvd.findByName(npv.getName());
-
 	        						 if (sv == null) {
 	        							npv.setParcours(p);
 	        							ppv.add(pvd.save(npv));
 	        						}
-	        						// Log.Log(sv.getName()+"|"+sv.getId());
 	        				}
-	        	     return ResponseEntity.ok(new JwtResponse<List<PVersement>>(false, ppv, ppv.size()+" versement(s) ajouté(s)"));
-	            	 } else {  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé")); }
+	        	      return ResponseEntity.ok(new JwtResponse<List<PVersement>>(false, ppv, ppv.size()+" versement(s) ajouté(s)"));
+	            	 } 
+	            	 else { 
+	            		 return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+	            	 }
 	        	}
 	            
 	            
@@ -818,7 +929,7 @@ public class SystemController {
 	            @RequestMapping(value = "/api/getStudentForParent/{id}")
 		       	public ResponseEntity<?> getStudentForParent (Authentication auth,  @PathVariable("id") Long id) {
 		        	   UserEntity  utt = getUser(auth);
-		 			   if(utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PARENT) ) {
+		 			   if(utt.getRole().getName().equals(RoleName.MASTER) || utt.getRole().getName().equals(RoleName.PARENT)  || utt.getRole().getName().equals(RoleName.ADMIN) ) {
 		 				    List<User> users = user.getStudentForParent(id);
 		        	        return ResponseEntity.ok(new JwtResponse<List<User>>(false,users,"Succès")); 
 		 			   }
@@ -863,8 +974,57 @@ public class SystemController {
 		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
 		       	}
 	            
+	            @RequestMapping(value ="/api/setChild/{id}/{code}/{etat}")
+		       	public ResponseEntity<?> setLPByAdmin(Authentication auth,@PathVariable("etat") int etat , @PathVariable("code") String code, @PathVariable("id") String ids) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.MASTER)) {
+		 				  Long id = Long.parseLong(ids); 
+		 				  if(etat==1) {
+		 				      user.setLPPA(id,code);
+		 				   }else{
+		 					  user.setLPMA(id,code); 
+		 				   }
+		        	     return ResponseEntity.ok(new JwtResponse<String>(false,"","Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
 	            
-	      
-   
-
+	            @RequestMapping(value ="/api/setChild/{id}/{code}/{etat}/{pin}")
+		       	public ResponseEntity<?> setLPByAdmin(Authentication auth,@PathVariable("etat") int etat , @PathVariable("code") String code, @PathVariable("id") String ids, @PathVariable("pin") int pin) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.PARENT)) {
+		 				  Long id = Long.parseLong(ids); 
+		 				  int r;
+		 				  if(etat==1) {
+		 				      r   =  user.setLPPA(id,code, pin);
+		 				   } else {
+		 					  r = user.setLPMA(id,code, pin); 
+		 				   }
+		        	     return ResponseEntity.ok(new JwtResponse<Integer>(false,r,"Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<UserEntity>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            
+	            @RequestMapping(value ="/api/getPVersement/{idp}/{idu}")
+		       	public ResponseEntity<?> getPVersement(Authentication auth,@PathVariable("idp") Long idp , @PathVariable("idu") Long idu) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.PARENT)) {
+		 				 List<PVersement> pvs = pvd.getVerseForPromoAndUser(idp, idu);
+		        	     return ResponseEntity.ok(new JwtResponse< List<PVersement> >(false,pvs,"Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<Integer>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	            @RequestMapping(value ="/api/getPaiement/{code}/{promo}")
+		       	public ResponseEntity<?> getPaiement(Authentication auth,@PathVariable("code") String code , @PathVariable("promo") String promo ) {
+		        	   UserEntity  utt = getUser(auth);
+		 			   if( utt.getRole().getName().equals(RoleName.PARENT)) {
+		 				 List<Payment> pvs = payRepo.getPaymentForUserByPromo(code, promo);
+		        	     return ResponseEntity.ok(new JwtResponse< List<Payment> >(false,pvs,"Succès")); 
+		 			  }
+		 			  return ResponseEntity.ok(new JwtResponse<Integer>(true,null,"Vous n'etes pas autorisé"));
+		       	}
+	            
+	           
 }

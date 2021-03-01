@@ -86,7 +86,7 @@ public class Etablissement extends cObj  implements Serializable {
     private String  msg_block;
     private Date    last_pay;
     // package
-    private boolean payroll= true;
+   
     // admis  -----
     private boolean admis_is_open;
     private Date date_admis_debut;
@@ -115,6 +115,9 @@ public class Etablissement extends cObj  implements Serializable {
     private String pass_msg_rep;
     
     @Column(nullable = false, columnDefinition=" integer default 1 ")
+    private int mode_paiement;
+    
+    @Column(nullable = false, columnDefinition=" integer default 1 ")
     private int year_part;
     
     @Column(nullable = false, columnDefinition=" boolean default false ")
@@ -131,6 +134,9 @@ public class Etablissement extends cObj  implements Serializable {
     @Column(nullable = false, columnDefinition=" boolean default true")
     private boolean actived;
     
+    @Column(nullable = false, columnDefinition=" boolean default true")
+    private boolean payroll= true;
+    
     @Column(nullable = true, updatable=true)
     Long id_img;
     
@@ -142,6 +148,7 @@ public class Etablissement extends cObj  implements Serializable {
     
     @Column(nullable = true, updatable=true)
     private String start_time;
+    
     @Column(nullable = true, updatable=true)
     private String end_time;
     
@@ -152,5 +159,19 @@ public class Etablissement extends cObj  implements Serializable {
     
     @Column(nullable = true, columnDefinition=" varchar default 'https://pledika.com/' ")
     private String backend;
+    
+    
+    @Column(nullable = true, columnDefinition=" varchar default 'http://192.168.0.1:8090/' ")
+    private String smsGateway;
+    
+    @Column(nullable = true, columnDefinition=" varchar default 'admin' ")
+    private String usernameGateway;
+    
+    @Column(nullable = true, columnDefinition=" varchar default '12345' ")
+    private String passGateway;
+    
+    @Column(nullable = true)
+    private String tokenGateway;
+    
     
 }

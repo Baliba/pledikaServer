@@ -102,7 +102,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		rest.exposeIdsFor(
 				entityManager.getMetamodel().getEntities().stream().map(Type::getJavaType).toArray(Class[]::new));
 		httpSecurity.csrf().disable().authorizeRequests()
-				.antMatchers("/api/contacts","/api/getFiles/**","/public/**","/assets/logo/**","/assets/imgs/**","/assets/**", "/api/login", "/api/logout","/api/authenticate", "/api/register","/api/etablissements","/api/fpass/**","/api/backdoor/**").permitAll().anyRequest()
+				.antMatchers("/api/contacts","/api/getFiles/**","/public/**","/assets/logo/**","/assets/imgs/**","/assets/**", "/api/login", "/api/logout","/api/authenticate", "/api/register","/api/etablissements","/api/fpass/**","/api/backdoor/**","/api/reussite/**","/api/getChildForParent/**").permitAll().anyRequest()
 				.authenticated().and().cors().and().exceptionHandling()
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

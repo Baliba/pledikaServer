@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hist.BysApp.entities.cObj;
+import com.hist.BysApp.entities.paiement.CycleOPaie;
+import com.hist.BysApp.entities.paiement.classe.ClasseOPaie;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.CascadeType;
@@ -44,6 +47,9 @@ public class Niveau extends cObj implements Serializable {
     private String  prev;
     private double  scolarite;
     
+    @Column(nullable = true,columnDefinition="double precision default '1000'")
+    private double montant_admis_classe = 0.0;
+    
     @Column(columnDefinition=" boolean default true ")
     private boolean  over_classe;
     
@@ -68,6 +74,12 @@ public class Niveau extends cObj implements Serializable {
     @Column(columnDefinition=" integer default 1 ")
     private Integer nbre_salle;
     // -----------------------
+    
+    @OneToMany(mappedBy = "niveau")
+    @JsonIgnoreProperties("niveau")
+    private Collection<ClasseOPaie> copaie;
+    
+    
     public Niveau() {}
     public Niveau(String name , Option o) {
         this.name = name ;

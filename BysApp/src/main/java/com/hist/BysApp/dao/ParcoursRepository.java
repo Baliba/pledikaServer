@@ -110,7 +110,12 @@ public interface ParcoursRepository extends JpaRepository<Parcours, Long> {
 	
 	 @Query("SELECT new dto.User(p.id, p.user.code, p.user.sexe, p.user.lastName,p.user.firstName, p.promo_name,'STUDENT', false, p.user.granted, p.user.id, p.moy_final, p.user.date_de_naiss, p.user.pob ,p.user.matricule,p.user.identifiant, p.user.nom_mere, p.user.annee_six, p.user.annee_neuv, p.user.annee_rheto, p.user.annee_philo,p.actived)  FROM Parcours p  WHERE p.promotion.promo_af.id =:id AND p.promotion.enabled=true ")
 	 List<User> getAllParcoursU(Long id);
-	
-	
+	 
+	 
+	 @Query("SELECT COUNT(p) FROM Parcours p WHERE p.promotion.id=:idp")
+	 Long  countStudent(@Param("idp") Long idp);
+	 
+	 @Query("SELECT COUNT(p) FROM Parcours p WHERE p.promotion.id=:idp AND p.user.sexe='M' ")
+	 Long  countStudentBySexe(@Param("idp") Long idp);
 
 }

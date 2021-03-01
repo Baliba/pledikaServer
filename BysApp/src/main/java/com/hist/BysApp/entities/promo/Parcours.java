@@ -93,6 +93,10 @@ public class Parcours extends cObj implements Serializable {
     
     @Column(columnDefinition=" integer default 0 ")
     private Integer decision;
+    
+    @Column(nullable=false, columnDefinition=" integer default 1 ")
+    private Integer mode_paiement;
+    
     Long id_promo;
     
 }

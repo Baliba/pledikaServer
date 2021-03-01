@@ -17,5 +17,6 @@ public class RStat {
 	private Long total_cours;
 	private int total_promo;
 	private Promo_af af;
+	private int total_parent;
 
 }

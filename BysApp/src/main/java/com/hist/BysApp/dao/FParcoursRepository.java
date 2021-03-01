@@ -36,4 +36,10 @@ public interface FParcoursRepository extends JpaRepository<Parcours_frag, Long> 
     
     @Query("SELECT new  Palmares.Etudiant (p.id, p.parcours.user.lastName, p.parcours.user.firstName,p.code_student, p.parcours.user.sexe)  FROM Parcours_frag p where p.promofrag.id=:id ORDER BY p.parcours.user.lastName, p.parcours.user.firstName")
     List<Etudiant> getEtudiants(@Param("id") Long id); 
+    
+    @Query("SELECT COUNT(p) FROM  Parcours_frag p WHERE p.promofrag.id=:idp")
+	Long  countStudent(@Param("idp") Long idp);
+	 
+	@Query("SELECT COUNT(p) FROM Parcours_frag p WHERE p.promofrag.id=:idp AND p.parcours.user.sexe='M' ")
+	Long  countStudentBySexe(@Param("idp") Long idp);
 }
