@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 public class Etablissement extends cObj  implements Serializable {
-	// new change 1
+	// new change 2
     private static final long serialVersionUID = 1L;
     @Id
     private String code; 
