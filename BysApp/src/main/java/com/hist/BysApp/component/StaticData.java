@@ -24,12 +24,12 @@ public class StaticData {
 	public static String email = "master@pledika.com";
 	
 	// DOMAINE 
-		public static  List<DocConfig> docConfig = Arrays.asList(
+    public static  List<DocConfig> docConfig = Arrays.asList(
 				new DocConfig("Acte de naissance","AN"),
 				new DocConfig("Carte Vaccination","CV"),
 				new DocConfig("Ancienne Relevée de note","AR"),
 				new DocConfig("Concours D'examen","CDE")
-		);
+	);
 	// DOMAINE 
 	public static  List<DomConfig> domConfig = Arrays.asList(
 			new DomConfig("Etude Classique","EC")
@@ -46,7 +46,7 @@ public class StaticData {
     // NIVEAU 
 	public static HashMap<String,List<Niveau>> niveau = new HashMap<>();
 	// ETAB 
-	public static String code_etab   ="E1";
+	public static String code_etab   = "E1";
 	public static String name_etab   = "College Pledika";
 	public static String cat_etab    = "Ecole Classique";
 	public static String annee_fond  = "2009";
@@ -54,9 +54,9 @@ public class StaticData {
 	public static String phone_a     = "(509)2227-1616";
 	public static String phone_b     = "";
 	public static String phone_c     = "";
-	public static String description ="";
-    public static String website     ="www.pledika.com";
-    public static String adresse     ="13# Delmas 83";
+	public static String description = "";
+    public static String website     = "www.pledika.com";
+    public static String adresse     = "13# Delmas 83";
     
     // ng serve --host 172.20.10.2 --port 4201
     

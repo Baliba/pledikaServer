@@ -1,4 +1,3 @@
-
 package com.hist.BysApp.entities.config;
 
 import com.hist.BysApp.entities.cObj;
