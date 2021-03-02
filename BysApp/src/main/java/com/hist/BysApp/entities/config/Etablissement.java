@@ -114,8 +114,7 @@ public class Etablissement extends cObj  implements Serializable {
     private String fail_msg_rep;
     private String pass_msg_rep;
     
-    @Column(nullable = false, columnDefinition=" integer default 1 ")
-    private int mode_paiement;
+  
     
     @Column(nullable = false, columnDefinition=" integer default 1 ")
     private int year_part;
@@ -172,6 +171,9 @@ public class Etablissement extends cObj  implements Serializable {
     
     @Column(nullable = true)
     private String tokenGateway;
+    
+    @Column(nullable = false, columnDefinition=" integer default 1 ")
+    private int mode_paiement;
     
     
 }
