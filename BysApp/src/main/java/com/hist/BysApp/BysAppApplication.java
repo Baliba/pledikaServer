@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.hist.BysApp.Helper.FileStorageProperties;
 
-   @SpringBootApplication
-   @ComponentScan
-   @EnableConfigurationProperties({ FileStorageProperties.class })
+  @SpringBootApplication
+  @ComponentScan
+  @EnableConfigurationProperties({ FileStorageProperties.class })
   public class BysAppApplication {
 	   
   // public class BysAppApplication  extends SpringBootServletInitializer {
