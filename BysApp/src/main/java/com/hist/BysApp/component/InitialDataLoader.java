@@ -475,20 +475,20 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
  
     @Transactional 
     public void setProgramme() {
-    	int i = 0;
-    	List<Option> os = optionDao.findAll();
-    	for (Option op: os) {
-    		for (Niveau niv: op.getNiveau()) {
-        		Programme p = new Programme();
-        		          p.setCode(" P-"+niv.getCode()+"-A");
-        		          p.setName(niv.getName()+"-A");
-        		          p.setNiveau(niv.getCode());
-        		          p.setPos(i);
-        		          p.setMax_cours(30);
-        		          p.setMax_four(30);
-        		          i++;
-        		          progDao.save(p);
-        	}
-    	}
+//    	int i = 0;
+//    	List<Option> os = optionDao.findAll();
+//    	for (Option op: os) {
+//    		for (Niveau niv: op.getNiveau()) {
+//        		Programme p = new Programme();
+//        		          p.setCode(" P-"+niv.getCode()+"-A");
+//        		          p.setName(niv.getName()+"-A");
+//        		          p.setNiveau(niv.getCode());
+//        		          p.setPos(i);
+//        		          p.setMax_cours(30);
+//        		          p.setMax_four(30);
+//        		          i++;
+//        		          progDao.save(p);
+//        	}
+//    	}
     }
 }
