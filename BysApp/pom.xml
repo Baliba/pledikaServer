@@ -57,11 +57,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-security</artifactId>
                </dependency>
+<!-- to delete 
          <dependency> 
 		   <groupId>org.springframework.boot</groupId>
 		   <artifactId>spring-boot-starter-web</artifactId>
 		 </dependency>
-<!-- to delete 
+
 		<dependency>
 		 <groupId>org.springframework.boot</groupId>
 		 <artifactId>spring-boot-starter-tomcat</artifactId>
@@ -132,6 +133,11 @@
 	  <type>jar</type>
 	 </dependency>
 	 
+	 <dependency>
+    <groupId>com.heroku.sdk</groupId>
+    <artifactId>heroku-maven-plugin</artifactId>
+    <version>3.0.4</version>
+</dependency>
 	</dependencies>
 
 	<build>
@@ -163,7 +169,7 @@
 	       <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
-                <version>{version}</version>
+                <version>3.0.4</version>
                 <configuration>
                     <appName>heroku-demo-stackabuse</appName>
                     <includeTarget>false</includeTarget>
