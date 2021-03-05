@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.hist.BysApp.dao_2;
+package com.hist.BysApp.dao;
 
 import com.hist.BysApp.entities.config.Etablissement;
 import com.hist.BysApp.entities.config.Server;
