@@ -89,7 +89,8 @@ import com.hist.BysApp.projection.CourseView;
 import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
-@Controller 
+@CrossOrigin("*")
+@Controller
 public class BackdoorController {
 	
 	
