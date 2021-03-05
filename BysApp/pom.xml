@@ -132,7 +132,12 @@
 	  <version>0.9.0</version>
 	  <type>jar</type>
 	 </dependency>
-	
+	 
+	 <dependency>
+    <groupId>com.heroku.sdk</groupId>
+    <artifactId>heroku-maven-plugin</artifactId>
+    <version>3.0.4</version>
+</dependency>
 	</dependencies>
 
 	<build>
@@ -164,7 +169,7 @@
 	       <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
-                <version>3.0.3</version>
+                <version>3.0.4</version>
                 <configuration>
                     <appName>heroku-demo-stackabuse</appName>
                     <includeTarget>false</includeTarget>
