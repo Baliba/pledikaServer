@@ -58,7 +58,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
 
 	}
-
+	
+	
 
 	@Autowired
 	RepositoryRestConfiguration rest;

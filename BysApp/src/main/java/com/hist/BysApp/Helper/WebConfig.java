@@ -19,5 +19,5 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
 
     }
-    
+
 }
