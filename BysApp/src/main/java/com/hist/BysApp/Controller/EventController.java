@@ -101,6 +101,7 @@ import models.MParcours;
 @Controller 
 public class EventController {
 	
+	// EVENT
 	
 	@Autowired 
 	PVDao pvd;
@@ -238,7 +239,6 @@ public class EventController {
        @Data
        public class Events{
     	   List<Event> jf,cg,ft,meet,app;
-        
        }
       
        

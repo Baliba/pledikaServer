@@ -127,6 +127,7 @@ import models.MParcours;
 
 @Controller 
 public class BulletinController {
+	// Bulletin
 	@Autowired 
 	PVDao pvd;
 	

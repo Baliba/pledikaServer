@@ -92,8 +92,7 @@ import com.hist.BysApp.service.JwtUserDetailsService;
 @CrossOrigin("*")
 @Controller
 public class BackdoorController {
-	
-	
+	// BACKDOOR
 	@Autowired 
 	PVDao pvd;
 	

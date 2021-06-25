@@ -39,6 +39,8 @@ public class Option extends cObj implements Serializable {
     private String code;
     private String name;
     
+    private Long id_resp;
+    
     private double montant_admis;
     
     @OneToMany(mappedBy="option",cascade=CascadeType.ALL)
