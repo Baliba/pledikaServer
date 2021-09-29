@@ -17,6 +17,7 @@ import com.hist.BysApp.entities.promo.Frag_cours;
 import com.hist.BysApp.entities.promo.PromoFrag;
 
 import Palmares.PFModel;
+import dto.PFrag;
 
 @CrossOrigin("*")
 @RepositoryRestResource
@@ -36,4 +37,10 @@ public interface PFragDao extends JpaRepository<PromoFrag, Long> {
     
     @Query("SELECT new Palmares.PFModel(pf.id, pf.share_code) FROM PromoFrag pf WHERE promotion.id=:idp AND pf.base=true ORDER BY pf.code ASC")
 	List<PFModel> findBasePeriodPF(@Param("idp") Long idp);
+    
+	@Query("SELECT new dto.PFrag(pf.id, pf.code, promotion.id) FROM PromoFrag pf WHERE pf.id=:id")
+    PFrag getPFragById(@Param("id") Long id);
+	
+	@Query("SELECT new dto.PFrag(pf.id, pf.code) FROM PromoFrag pf WHERE promotion.id=:idp")
+    List<PFrag> getFByPromo(@Param("idp") Long idp);
 }

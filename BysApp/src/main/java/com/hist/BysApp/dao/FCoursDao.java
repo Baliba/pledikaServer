@@ -28,5 +28,7 @@ public interface FCoursDao extends JpaRepository<Frag_cours, Long> {
 	 
 	 @Query("SELECT new Palmares.Cours(c.id, c.code, c.name,c.coef,c.note_total) FROM Frag_cours c WHERE  c.promofrag.id = :id ORDER BY c.name ASC   ")
 	 List<Cours> getCoursByFrag(@Param("id") Long id);
+	 
+
 
 }

@@ -7,6 +7,7 @@ package com.hist.BysApp.Controller;
 
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hist.BysApp.Helper.RoleName;
@@ -97,13 +99,15 @@ import com.hist.BysApp.projection.CourseView;
 import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 
+import Palmares.Cours;
 import Palmares.Etudiant;
 import Palmares.MResults;
+import Palmares.StatCours;
 import dto.Log;
 import dto.User;
 import models.MParcours;
 
-@Controller 
+@RestController
 public class SystemController {
 	// App 
 	@Autowired 
@@ -1025,5 +1029,7 @@ public class SystemController {
 		 			  return ResponseEntity.ok(new JwtResponse<Integer>(true,null,"Vous n'etes pas autorisé"));
 		       	}
 	            
+	         
+	                  
 	           
 }

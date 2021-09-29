@@ -59,4 +59,6 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 	 @Query("SELECT p.moy_accept FROM Promotion p Where p.id=:idp ")
 	 double getPassMoy(@Param("idp") Long idp);
 	 
+	 @Query("SELECT  new com.hist.BysApp.model.PromoDto(p.id,p.code) FROM Promotion p WHERE p.id =:id")
+	 PromoDto getPromoDto(@Param("id") Long idp);
 }

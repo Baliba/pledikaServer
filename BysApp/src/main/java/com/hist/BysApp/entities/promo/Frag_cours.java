@@ -40,9 +40,11 @@ public class Frag_cours  extends cObj implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
     @ManyToOne
     @JsonIgnoreProperties({"frag_cours","promotion"})
     private PromoFrag promofrag;
+    
     private Long id_promo;
     private Long id_cours;
     private String course;
@@ -79,4 +81,8 @@ public class Frag_cours  extends cObj implements Serializable {
 	@OneToMany(mappedBy = "frag_cours", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties({"frag_cours","parcours_frag"}) 
 	private Collection<Results> results;
+	
+	public int getSizeResult() {
+		return results.size();
+	}
 }

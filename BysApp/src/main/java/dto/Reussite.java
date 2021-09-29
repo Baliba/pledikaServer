@@ -1,10 +1,13 @@
 package dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class Reussite {
-  String classe, period; 
+  Long id;	
+  String period; 
   Long total_class, total_f, total_g;
   Long total_iclass, total_if, total_ig;	
   Long total_echec , total_pass; 

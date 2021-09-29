@@ -112,6 +112,9 @@ import com.hist.BysApp.service.FileStorageService;
 import com.hist.BysApp.service.JwtUserDetailsService;
 import com.hist.BysApp.service.NotService;
 
+import Palmares.Cours;
+import Palmares.StatCours;
+import dto.PFrag;
 import dto.Reussite;
 import dto.User;
 
@@ -1161,35 +1164,8 @@ public class IndexController {
 		   }
 		}
 	    
-		 @RequestMapping(value = "/api/reussite/{idp}")
-		 public ResponseEntity<?>  reussite(Authentication auth, @PathVariable("idp") Long idp) {
-			 List<Reussite> rss = new ArrayList<>();   
-			 List<PromoFrag>  pfs = pfDao.getFragByPromo(idp);
-			 Long  total_e = pars.countStudent(idp) ;
-			 Long  total_eg = pars.countStudentBySexe(idp);
-	
-//			 for(PromoFrag pf : pfs) {
-//			          Reussite rs = new Reussite();
-//			          rs.setPeriod(pf.getCode());
-//			          rs.setTotal_class(total_e);
-//			          rs.setTotal_g(total_eg);
-//			          rs.setTotal_f(total_e-total_eg);
-//			          //  student IN 
-//			         Long tic = fpDao.countStudent(pf.getId());
-//			         rs.setTotal_iclass(tic); 
-//			         Long tig = fpDao.countStudentBySexe(pf.getId());
-//			         rs.setTotal_ig(tig);
-//			         rs.setTotal_if(tic-tig);
-//			         List<Long> tp = rDao.getStudentPass(pf.getId());
-//			         for(Long utp : tp) {
-//			        	System.out.print("\n"+pf.getCode()+": \n"+utp+"\n");
-//			         }
-//			         
-//			        //  rs.setTotal_pass(tp);
-//			         rss.add(rs);
-//			 }    
-			          
-			 return ResponseEntity.ok(new JwtResponse<List<Reussite>>(false, rss, "")); 
-			 
-		 }
+		
+		 
+        
+            
 }

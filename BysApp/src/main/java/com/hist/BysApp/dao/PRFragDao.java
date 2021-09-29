@@ -27,4 +27,5 @@ public interface PRFragDao extends JpaRepository<PRFrag, Long> {
 	
 	PRFrag findByCode( String code);
 
+
 }
